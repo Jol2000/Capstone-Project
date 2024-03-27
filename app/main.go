@@ -2,46 +2,50 @@ package main
 
 import (
 	"encoding/json"
+	"hello/models"
 	"image/color"
 	"io/ioutil"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
 
-type Movies struct {
-	Results []Movie `json:"Movies"`
+type Items struct {
+	Results []Item `json:"Movies"`
 }
 
-type Movie struct {
+type Item struct {
 	Title string `json:"Title"`
 	Plot  string `json:"Plot"`
 	Genre string `json:"Genre"`
 }
 
-func LoadMovieData() (Movies, error) {
+func LoadMovieData() (Items, error) {
 	data, err := ioutil.ReadFile("./data/testDataMovies.json")
 	if err != nil {
-		return Movies{}, err
+		return Items{}, err
 	}
-	var moviesResult Movies
+	var moviesResult Items
 	err = json.Unmarshal(data, &moviesResult)
 	if err != nil {
-		return Movies{}, err
+		return Items{}, err
 	}
 	return moviesResult, nil
 }
 
 func main() {
 
-	moviesData, err := LoadMovieData()
-	if err != nil {
-		panic(err)
-	}
+	// moviesRawData, err := LoadMovieData()
+	// if err != nil {
+	// 	panic(err)
+	// }
+
 	//fmt.Printf("Movies: %s/n", moviesData.Results)
 
 	a := app.New()
@@ -73,19 +77,32 @@ func main() {
 	filterIcon.FillMode = canvas.ImageFillOriginal
 	addIcon := canvas.NewImageFromFile("../images/add_icon.png")
 	addIcon.FillMode = canvas.ImageFillOriginal
-	//collectionToolBar := container.New(layout.NewHBoxLayout(), typeIcon, collectionName, layout.NewSpacer(), helpIcon, searchIcon, filterIcon, addIcon)
-	//collectionToolBarContainer := container.NewVBox(collectionToolBar)
+
+	//Search bar
+	collectionSearchBar := widget.NewEntry()
+
+	// Item list binding
+	itemsData := []models.Item{
+		models.NewItem("Animals", "Dog"),
+		models.NewItem("Animals", "Cat"),
+		models.NewItem("Animals", "Bird"),
+		models.NewItem("Animals", "Horse"),
+	}
+	collectionData := binding.NewUntypedList()
+	for _, t := range itemsData {
+		collectionData.Append(t)
+	}
 
 	// Collection List
-	collectionList := widget.NewList(
-		func() int {
-			return len(moviesData.Results)
-		},
+	collectionList := widget.NewListWithData(
+		collectionData,
 		func() fyne.CanvasObject {
-			return widget.NewLabel("Template")
+			return widget.NewLabel("")
 		},
-		func(i widget.ListItemID, o fyne.CanvasObject) {
-			o.(*widget.Label).SetText(moviesData.Results[i].Title)
+		func(di binding.DataItem, o fyne.CanvasObject) {
+			diu, _ := di.(binding.Untyped).Get()
+			item := diu.(models.Item)
+			o.(*widget.Label).SetText(item.Name)
 		})
 
 	// Icons
@@ -145,10 +162,25 @@ func main() {
 	// Content
 	dataDisplayContainer := container.NewHSplit(collectionList, itemData)
 	dataDisplayContainer.Offset = 0.3
-	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
+	content := container.NewBorder(TopContentContainer, collectionSearchBar, nil, nil, dataDisplayContainer)
 
 	collectionList.OnSelected = func(id widget.ListItemID) {
-		itemData.SetText(moviesData.Results[id].Plot)
+		itemData.SetText(itemsData[id].Collection)
+	}
+
+	collectionSearchBar.OnChanged = func(searchInput string) {
+		searchData, _ := collectionData.Get()
+
+		searchData = searchData[:0]
+		collectionData.Set(searchData)
+
+		for _, item := range itemsData {
+			if strings.Contains(item.Name, searchInput) {
+				collectionData.Append(item)
+			}
+		}
+
+		//
 	}
 
 	// Setting Content to window
