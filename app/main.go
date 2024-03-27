@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"hello/models"
 	"image/color"
 	"io/ioutil"
@@ -164,7 +165,14 @@ func main() {
 	content := container.NewBorder(TopContentContainer, collectionSearchBar, nil, nil, dataDisplayContainer)
 
 	collectionList.OnSelected = func(id widget.ListItemID) {
-		itemData.SetText(itemsData[id].Collection)
+		rawData, _ := collectionData.GetValue(id)
+
+		if data, ok := rawData.(models.Item); ok {
+			fieldValue := data.Collection
+			itemData.SetText(fieldValue)
+		} else {
+			fmt.Println("Data not found")
+		}
 	}
 
 	collectionSearchBar.OnChanged = func(searchInput string) {
