@@ -41,12 +41,17 @@ func LoadMovieData() (Items, error) {
 
 func main() {
 
-	// moviesRawData, err := LoadMovieData()
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	//fmt.Printf("Movies: %s/n", moviesData.Results)
+	itemsData := []models.Item{
+		models.NewItem("Animals", "Dog"),
+		models.NewItem("Animals", "Cat"),
+		models.NewItem("Animals", "Bird"),
+		models.NewItem("Animals", "Horse"),
+		models.NewItem("Movies", "Avatar"),
+		models.NewItem("Movies", "I am Legend"),
+		models.NewItem("Movies", "TMNT"),
+		models.NewItem("Movies", "No country for old men"),
+		models.NewItem("Movies", "Inception"),
+	}
 
 	a := app.New()
 	w := a.NewWindow("Treasure It Desktop")
@@ -82,12 +87,6 @@ func main() {
 	collectionSearchBar := widget.NewEntry()
 
 	// Item list binding
-	itemsData := []models.Item{
-		models.NewItem("Animals", "Dog"),
-		models.NewItem("Animals", "Cat"),
-		models.NewItem("Animals", "Bird"),
-		models.NewItem("Animals", "Horse"),
-	}
 	collectionData := binding.NewUntypedList()
 	for _, t := range itemsData {
 		collectionData.Append(t)
@@ -174,9 +173,13 @@ func main() {
 		searchData = searchData[:0]
 		collectionData.Set(searchData)
 
+		searchInputs := strings.Split(searchInput, ",")
+
 		for _, item := range itemsData {
-			if strings.Contains(item.Name, searchInput) {
-				collectionData.Append(item)
+			for _, searchSplit := range searchInputs {
+				if strings.Contains(item.Name, searchSplit) {
+					collectionData.Append(item)
+				}
 			}
 		}
 
