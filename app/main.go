@@ -175,7 +175,12 @@ func main() {
 		}
 	}
 
+	collectionSearchBar.OnCursorChanged = func() {
+		collectionList.UnselectAll()
+	}
+
 	collectionSearchBar.OnChanged = func(searchInput string) {
+
 		searchData, _ := collectionData.Get()
 
 		searchData = searchData[:0]
@@ -183,15 +188,29 @@ func main() {
 
 		searchInputs := strings.Split(searchInput, ",")
 
+		var addedItems []string
+		addedItems = append(addedItems, "")
+
 		for _, item := range itemsData {
 			for _, searchSplit := range searchInputs {
+				searchSplit = strings.Trim(searchSplit, " ")
+				if searchSplit == "" {
+					continue
+				}
 				if strings.Contains(item.Name, searchSplit) {
-					collectionData.Append(item)
+					used := false
+					for _, itemUsed := range addedItems {
+						if strings.Contains(itemUsed, item.Name) {
+							used = true
+						}
+					}
+					if !used {
+						collectionData.Append(item)
+						addedItems = append(addedItems, item.Name)
+					}
 				}
 			}
 		}
-
-		//
 	}
 
 	// Setting Content to window

@@ -15,7 +15,3 @@ func NewItem(collection string, name string) Item {
 func (t Item) String() string {
 	return fmt.Sprintf("%s - $t", t.Collection, t.Name)
 }
-
-func GetCollection() Item {
-	return Item{}
-}
