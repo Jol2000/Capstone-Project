@@ -67,7 +67,6 @@ func main() {
 	collectionsButton := canvas.NewText("Search", color.Black)
 	collectionsButton.TextSize = 30
 	TopContent := container.New(layout.NewHBoxLayout(), tiTitle, layout.NewSpacer(), searchEntry, homeButton, collectionsButton)
-	TopContentContainer := container.NewVBox(TopContent)
 
 	// Collection List View
 	// Tool Bar
@@ -162,7 +161,8 @@ func main() {
 	// Content
 	dataDisplayContainer := container.NewHSplit(collectionList, itemData)
 	dataDisplayContainer.Offset = 0.3
-	content := container.NewBorder(TopContentContainer, collectionSearchBar, nil, nil, dataDisplayContainer)
+	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar)
+	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
 
 	collectionList.OnSelected = func(id widget.ListItemID) {
 		rawData, _ := collectionData.GetValue(id)
@@ -180,7 +180,12 @@ func main() {
 	}
 
 	collectionSearchBar.OnChanged = func(searchInput string) {
-
+		if searchInput == "" {
+			for _, t := range itemsData {
+				collectionData.Append(t)
+			}
+			return
+		}
 		searchData, _ := collectionData.Get()
 
 		searchData = searchData[:0]

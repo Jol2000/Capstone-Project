@@ -6,10 +6,16 @@ type Item struct {
 	Collection  string
 	Name        string
 	Description string
+	Tags        []string
 }
 
 func NewItem(collection string, name string) Item {
-	return Item{collection, name, ""}
+	return Item{
+		Collection:  collection,
+		Name:        name,
+		Description: "",
+		Tags:        []string{},
+	}
 }
 
 func (t Item) String() string {
