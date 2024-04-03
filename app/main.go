@@ -104,53 +104,32 @@ func main() {
 			o.(*widget.Label).SetText(item.Name)
 		})
 
+	// Label List
+	// Item Labels
+	inputLabelData := []string{"L1", "L2", "L3"}
+	fmt.Println("---TEST--- ", len(inputLabelData))
+
+	itemLabelData := binding.NewUntypedList()
+	//fmt.Println("---TEST--- ", itemLabelData.Length())
+
+	for _, t := range inputLabelData {
+		itemLabelData.Append(t)
+	}
+
+	itemLabelsList := widget.NewListWithData(
+		itemLabelData,
+		func() fyne.CanvasObject {
+			return widget.NewLabel("")
+		},
+		func(di binding.DataItem, o fyne.CanvasObject) {
+			diu, _ := di.(binding.Untyped).Get()
+			label := diu.(string)
+			o.(*widget.Label).SetText(label)
+		})
+
 	// Icons
 	editIcon := canvas.NewImageFromFile("../images/edit_icon.png")
 	editIcon.FillMode = canvas.ImageFillOriginal
-
-	// Item Tool bar
-	//itemToolBar := container.New(layout.NewHBoxLayout(), layout.NewSpacer(), helpIcon, filterIcon, editIcon)
-	//itemToolBarContainer := container.NewVBox(itemToolBar)
-
-	// Item View
-	// itemTitleText := canvas.NewText("Horse", color.Black)
-	// itemDescriptionText := canvas.NewText("Decription of item", color.Black)
-	// horseImage := canvas.NewImageFromFile("../images/horse_image.png")
-
-	//var testData2 = []string{"Name: Horsey", "Height: 213cm", "Diet: Carrot, Apple, Hay", "Birth: 12/06/2005", "Legs: 4", "Sex: Male", "Weight: 267kg", "Age: 19", "Colour: White", "Breed: Mule", "Area: 2B", "Personality: Timid", "Health: Fair", "For Sale: No"}
-
-	// Item Data List
-	// itemDataList := widget.NewList(
-	// 	func() int {
-	// 		return len(testData2)
-	// 	},
-	// 	func() fyne.CanvasObject {
-	// 		return widget.NewLabel("Template")
-	// 	},
-	// 	func(i widget.ListItemID, o fyne.CanvasObject) {
-	// 		o.(*widget.Label).SetText(testData2[i])
-	// 	})
-
-	//var testData3 = []string{"Herbivore", "Fur", "Favourite", "Harmless", "Old", "Fast", "Heavy"}
-
-	// Item Data List
-	//itemTagList := widget.NewList(
-	// func() int {
-	// 	return len(testData3)
-	// },
-	// func() fyne.CanvasObject {
-	// 	return widget.NewLabel("Template")
-	// },
-	// func(i widget.ListItemID, o fyne.CanvasObject) {
-	// 	o.(*widget.Label).SetText(testData3[i])
-	// })
-
-	//itemMainInfoLayout := container.NewGridWithColumns(2,
-	//(container.NewBorder(itemTitleText, nil, nil, nil, itemDescriptionText)), horseImage)
-
-	//itemMainDataLayout := container.NewGridWithColumns(2, itemDataList, itemTagList)
-
-	//itemViewLayout := container.NewBorder(itemToolBarContainer, nil, nil, nil, container.NewGridWithRows(2, itemMainInfoLayout, itemMainDataLayout))
 
 	itemData := widget.NewLabel("Select a movie")
 	itemData.Wrapping = fyne.TextWrapWord
@@ -159,7 +138,7 @@ func main() {
 	//collectionViewLayout := container.NewGridWithColumns(2, collectionListContainer, itemViewLayout)
 
 	// Content
-	dataDisplayContainer := container.NewHSplit(collectionList, itemData)
+	dataDisplayContainer := container.NewHSplit(collectionList, itemLabelsList)
 	dataDisplayContainer.Offset = 0.3
 	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar)
 	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
