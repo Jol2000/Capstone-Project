@@ -107,7 +107,6 @@ func main() {
 	// Label List
 	// Item Labels
 	inputLabelData := []string{"L1", "L2", "L3"}
-	fmt.Println("---TEST--- ", len(inputLabelData))
 
 	itemLabelData := binding.NewUntypedList()
 	//fmt.Println("---TEST--- ", itemLabelData.Length())
@@ -127,6 +126,27 @@ func main() {
 			o.(*widget.Label).SetText(label)
 		})
 
+	// Tag List
+	// Item Tags
+	inputTagData := []string{"T1", "T2", "T3"}
+
+	itemTagData := binding.NewUntypedList()
+
+	for _, t := range inputTagData {
+		itemTagData.Append(t)
+	}
+
+	itemTagsList := widget.NewListWithData(
+		itemTagData,
+		func() fyne.CanvasObject {
+			return widget.NewLabel("")
+		},
+		func(di binding.DataItem, o fyne.CanvasObject) {
+			diu, _ := di.(binding.Untyped).Get()
+			tag := diu.(string)
+			o.(*widget.Label).SetText(tag)
+		})
+
 	// Icons
 	editIcon := canvas.NewImageFromFile("../images/edit_icon.png")
 	editIcon.FillMode = canvas.ImageFillOriginal
@@ -138,7 +158,8 @@ func main() {
 	//collectionViewLayout := container.NewGridWithColumns(2, collectionListContainer, itemViewLayout)
 
 	// Content
-	dataDisplayContainer := container.NewHSplit(collectionList, itemLabelsList)
+	labelTagListContainer := container.NewHSplit(itemLabelsList, itemTagsList)
+	dataDisplayContainer := container.NewHSplit(collectionList, labelTagListContainer)
 	dataDisplayContainer.Offset = 0.3
 	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar)
 	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
