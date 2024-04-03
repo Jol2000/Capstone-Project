@@ -42,10 +42,15 @@ func LoadMovieData() (Items, error) {
 
 func main() {
 
+	testItem1 := models.NewItem("Animals", "Dog")
+	testItem1.AddLabel("Label: Test")
+	testItem2 := models.NewItem("Animals", "Cat")
+	testItem2.AddTag("Test Tag")
+
 	itemsData := []models.Item{
-		models.NewItem("Animals", "Dog"),
-		models.NewItem("Animals", "Cat"),
-		models.NewItem("Animals", "Bird"),
+		testItem1,
+		testItem2,
+		models.NewItem("Animals", "Bird", {"Test Label"}, ["Test Tag"]),
 		models.NewItem("Animals", "Horse"),
 		models.NewItem("Movies", "Avatar"),
 		models.NewItem("Movies", "I am Legend"),
@@ -109,7 +114,6 @@ func main() {
 	inputLabelData := []string{"L1", "L2", "L3"}
 
 	itemLabelData := binding.NewUntypedList()
-	//fmt.Println("---TEST--- ", itemLabelData.Length())
 
 	for _, t := range inputLabelData {
 		itemLabelData.Append(t)
@@ -168,6 +172,15 @@ func main() {
 		rawData, _ := collectionData.GetValue(id)
 
 		if data, ok := rawData.(models.Item); ok {
+			// Label Data
+			labelData, _ := itemLabelData.Get()
+			labelData = labelData[:0]
+			itemLabelData.Set(labelData)
+			fmt.Println("Labels: ", data.Labels)
+			for _, label := range data.Labels {
+				itemLabelData.Append(label)
+				fmt.Println("Label: ", label)
+			}
 			fieldValue := data.Collection
 			itemData.SetText(fieldValue)
 		} else {
