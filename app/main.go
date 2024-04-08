@@ -132,7 +132,7 @@ func main() {
 
 	// Tag List
 	// Item Tags
-	inputTagData := []string{"T1", "T2", "T3"}
+	inputTagData := []string{}
 
 	itemTagData := binding.NewUntypedList()
 
@@ -162,8 +162,18 @@ func main() {
 	//collectionViewLayout := container.NewGridWithColumns(2, collectionListContainer, itemViewLayout)
 
 	// Content
+	// Item Name and Description
+	itemName := widget.NewLabel("Name")
+	itemDescription := widget.NewLabel("Description")
+	itemNameDescriptionContainer := container.NewBorder(itemName, nil, nil, nil, itemDescription)
+	// Item image
+	//itemImage := canvas.NewImageFromFile()
+	itemImagePlaceholder := widget.NewLabel("Image Placeholder")
+	// Formatting
+	nameDescriptionImageContainer := container.NewHSplit(itemNameDescriptionContainer, itemImagePlaceholder)
 	labelTagListContainer := container.NewHSplit(itemLabelsList, itemTagsList)
-	dataDisplayContainer := container.NewHSplit(collectionList, labelTagListContainer)
+	itemDataContainer := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
+	dataDisplayContainer := container.NewHSplit(collectionList, itemDataContainer)
 	dataDisplayContainer.Offset = 0.3
 	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar)
 	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
@@ -176,9 +186,15 @@ func main() {
 			labelData, _ := itemLabelData.Get()
 			labelData = labelData[:0]
 			itemLabelData.Set(labelData)
-			fmt.Println("Labels: ", data.Labels)
 			for _, label := range data.Labels {
 				itemLabelData.Append(label)
+			}
+			// Tag Data
+			tagData, _ := itemTagData.Get()
+			tagData = tagData[:0]
+			itemTagData.Set(tagData)
+			for _, tag := range data.Tags {
+				itemTagData.Append(tag)
 			}
 			fieldValue := data.Collection
 			itemData.SetText(fieldValue)
@@ -206,7 +222,7 @@ func main() {
 		searchInputs := strings.Split(searchInput, ",")
 
 		var addedItems []string
-		addedItems = append(addedItems, "")
+		//addedItems = append(addedItems, "")
 
 		for _, item := range itemsData {
 			for _, searchSplit := range searchInputs {
@@ -214,6 +230,7 @@ func main() {
 				if searchSplit == "" {
 					continue
 				}
+				// Name search
 				if strings.Contains(item.Name, searchSplit) {
 					used := false
 					for _, itemUsed := range addedItems {
@@ -224,6 +241,49 @@ func main() {
 					if !used {
 						collectionData.Append(item)
 						addedItems = append(addedItems, item.Name)
+					}
+				}
+				// Collection search
+				if strings.Contains(item.Collection, searchSplit) {
+					used := false
+					for _, itemUsed := range addedItems {
+						if strings.Contains(itemUsed, item.Name) {
+							used = true
+						}
+					}
+					if !used {
+						collectionData.Append(item)
+						addedItems = append(addedItems, item.Name)
+					}
+				}
+				// Label search
+				for _, label := range item.Labels {
+					if strings.Contains(label, searchSplit) {
+						used := false
+						for _, itemUsed := range addedItems {
+							if strings.Contains(itemUsed, item.Name) {
+								used = true
+							}
+						}
+						if !used {
+							collectionData.Append(item)
+							addedItems = append(addedItems, item.Name)
+						}
+					}
+				}
+				// Tag search
+				for _, tag := range item.Tags {
+					if strings.Contains(tag, searchSplit) {
+						used := false
+						for _, itemUsed := range addedItems {
+							if strings.Contains(itemUsed, item.Name) {
+								used = true
+							}
+						}
+						if !used {
+							collectionData.Append(item)
+							addedItems = append(addedItems, item.Name)
+						}
 					}
 				}
 			}
