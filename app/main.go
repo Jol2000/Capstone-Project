@@ -50,7 +50,7 @@ func main() {
 	itemsData := []models.Item{
 		testItem1,
 		testItem2,
-		models.NewItem("Animals", "Bird", {"Test Label"}, ["Test Tag"]),
+		models.NewItemwithLabelTag("Animals", "Bird", []string{"Test Label"}, []string{"Test Tag"}),
 		models.NewItem("Animals", "Horse"),
 		models.NewItem("Movies", "Avatar"),
 		models.NewItem("Movies", "I am Legend"),
@@ -179,7 +179,6 @@ func main() {
 			fmt.Println("Labels: ", data.Labels)
 			for _, label := range data.Labels {
 				itemLabelData.Append(label)
-				fmt.Println("Label: ", label)
 			}
 			fieldValue := data.Collection
 			itemData.SetText(fieldValue)
