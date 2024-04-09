@@ -1,11 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"hello/models"
 	"image/color"
-	"io/ioutil"
 	"strings"
 
 	"fyne.io/fyne/v2"
@@ -17,28 +15,28 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-type Items struct {
-	Results []Item `json:"Movies"`
-}
+// type Items struct {
+// 	Results []Item `json:"Movies"`
+// }
 
-type Item struct {
-	Title string `json:"Title"`
-	Plot  string `json:"Plot"`
-	Genre string `json:"Genre"`
-}
+// type Item struct {
+// 	Title string `json:"Title"`
+// 	Plot  string `json:"Plot"`
+// 	Genre string `json:"Genre"`
+// }
 
-func LoadMovieData() (Items, error) {
-	data, err := ioutil.ReadFile("./data/testDataMovies.json")
-	if err != nil {
-		return Items{}, err
-	}
-	var moviesResult Items
-	err = json.Unmarshal(data, &moviesResult)
-	if err != nil {
-		return Items{}, err
-	}
-	return moviesResult, nil
-}
+// func LoadMovieData() (Items, error) {
+// 	data, err := ioutil.ReadFile("./data/testDataMovies.json")
+// 	if err != nil {
+// 		return Items{}, err
+// 	}
+// 	var moviesResult Items
+// 	err = json.Unmarshal(data, &moviesResult)
+// 	if err != nil {
+// 		return Items{}, err
+// 	}
+// 	return moviesResult, nil
+// }
 
 func main() {
 
@@ -59,6 +57,9 @@ func main() {
 		models.NewItem("Movies", "Inception"),
 	}
 
+	//var currentItem models.Item
+	var currentItemID int
+
 	a := app.New()
 	w := a.NewWindow("Treasure It Desktop")
 
@@ -71,7 +72,8 @@ func main() {
 	homeButton.TextSize = 30
 	collectionsButton := canvas.NewText("Search", color.Black)
 	collectionsButton.TextSize = 30
-	TopContent := container.New(layout.NewHBoxLayout(), tiTitle, layout.NewSpacer(), searchEntry, homeButton, collectionsButton)
+	addItemButton := widget.NewLabel("+")
+	TopContent := container.New(layout.NewHBoxLayout(), tiTitle, layout.NewSpacer(), addItemButton, searchEntry, homeButton, collectionsButton)
 
 	// Collection List View
 	// Tool Bar
@@ -113,7 +115,7 @@ func main() {
 	// Item Labels
 	inputLabelData := []string{"L1", "L2", "L3"}
 
-	itemLabelData := binding.NewUntypedList()
+	itemLabelData := binding.NewStringList()
 
 	for _, t := range inputLabelData {
 		itemLabelData.Append(t)
@@ -125,16 +127,14 @@ func main() {
 			return widget.NewLabel("")
 		},
 		func(di binding.DataItem, o fyne.CanvasObject) {
-			diu, _ := di.(binding.Untyped).Get()
-			label := diu.(string)
-			o.(*widget.Label).SetText(label)
+			o.(*widget.Label).Bind(di.(binding.String))
 		})
 
 	// Tag List
 	// Item Tags
 	inputTagData := []string{}
 
-	itemTagData := binding.NewUntypedList()
+	itemTagData := binding.NewStringList()
 
 	for _, t := range inputTagData {
 		itemTagData.Append(t)
@@ -146,9 +146,7 @@ func main() {
 			return widget.NewLabel("")
 		},
 		func(di binding.DataItem, o fyne.CanvasObject) {
-			diu, _ := di.(binding.Untyped).Get()
-			tag := diu.(string)
-			o.(*widget.Label).SetText(tag)
+			o.(*widget.Label).Bind(di.(binding.String))
 		})
 
 	// Icons
@@ -169,19 +167,71 @@ func main() {
 	// Item image
 	//itemImage := canvas.NewImageFromFile()
 	itemImagePlaceholder := widget.NewLabel("Image Placeholder")
+	// Edit Item
+	editItemButton := widget.NewButton("Edit", func() {
+		fmt.Println("Edit Press")
+	})
+	// Label Add
+	labelEntry := widget.NewEntry()
+	labelAddButton := widget.NewButton("  +  ", func() {
+		rawData, _ := collectionData.GetValue(currentItemID)
+		if data, ok := rawData.(models.Item); ok {
+			data.Labels = append(data.Labels, labelEntry.Text)
+			itemLabelData.Append(labelEntry.Text)
+			collectionData.SetValue(currentItemID, data)
+			labelEntry.Text = ""
+			labelEntry.Refresh()
+		}
+	})
+	labelAddButton.Disable()
+	labelEntry.OnChanged = func(input string) {
+		labelAddButton.Disable()
+
+		if len(input) >= 3 {
+			labelAddButton.Enable()
+		}
+	}
+
+	// Tag Add
+	tagEntry := widget.NewEntry()
+	tagAddButton := widget.NewButton("  +  ", func() {
+		rawData, _ := collectionData.GetValue(currentItemID)
+		if data, ok := rawData.(models.Item); ok {
+			data.Labels = append(data.Labels, tagEntry.Text)
+			itemTagData.Append(tagEntry.Text)
+			collectionData.SetValue(currentItemID, data)
+			tagEntry.Text = ""
+			tagEntry.Refresh()
+		}
+	})
+	tagAddButton.Disable()
+	tagEntry.OnChanged = func(input string) {
+		tagAddButton.Disable()
+
+		if len(input) >= 3 {
+			tagAddButton.Enable()
+		}
+	}
+
 	// Formatting
 	nameDescriptionImageContainer := container.NewHSplit(itemNameDescriptionContainer, itemImagePlaceholder)
-	labelTagListContainer := container.NewHSplit(itemLabelsList, itemTagsList)
+	itemLabelListWithEntry := container.NewBorder(nil, container.NewBorder(nil, nil, nil, labelAddButton, labelEntry), nil, nil, itemLabelsList)
+	itemTagListWithEntry := container.NewBorder(nil, container.NewBorder(nil, nil, nil, tagAddButton, tagEntry), nil, nil, itemTagsList)
+	labelTagListContainer := container.NewHSplit(itemLabelListWithEntry, itemTagListWithEntry)
 	itemDataContainer := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
 	dataDisplayContainer := container.NewHSplit(collectionList, itemDataContainer)
 	dataDisplayContainer.Offset = 0.3
-	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar)
+	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar, editItemButton)
 	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
 
 	collectionList.OnSelected = func(id widget.ListItemID) {
 		rawData, _ := collectionData.GetValue(id)
+		currentItemID = id
 
 		if data, ok := rawData.(models.Item); ok {
+			// Set current Item
+			//currentItem = data
+
 			// Label Data
 			labelData, _ := itemLabelData.Get()
 			labelData = labelData[:0]
@@ -209,6 +259,9 @@ func main() {
 
 	collectionSearchBar.OnChanged = func(searchInput string) {
 		if searchInput == "" {
+			resetData, _ := collectionData.Get()
+			resetData = resetData[:0]
+			collectionData.Set(resetData)
 			for _, t := range itemsData {
 				collectionData.Append(t)
 			}
