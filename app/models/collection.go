@@ -20,11 +20,11 @@ func NewItem(collection string, name string) Item {
 	}
 }
 
-func NewItemwithLabelTag(collection string, name string, labels []string, tags []string) Item {
+func NewItemwithLabelTag(collection string, name string, description string, labels []string, tags []string) Item {
 	return Item{
 		Collection:  collection,
 		Name:        name,
-		Description: "",
+		Description: description,
 		Tags:        tags,
 		Labels:      labels,
 	}

@@ -25,18 +25,20 @@ import (
 // 	Genre string `json:"Genre"`
 // }
 
-// func LoadMovieData() (Items, error) {
-// 	data, err := ioutil.ReadFile("./data/testDataMovies.json")
-// 	if err != nil {
-// 		return Items{}, err
-// 	}
-// 	var moviesResult Items
-// 	err = json.Unmarshal(data, &moviesResult)
-// 	if err != nil {
-// 		return Items{}, err
-// 	}
-// 	return moviesResult, nil
-// }
+//	func LoadMovieData() (Items, error) {
+//		data, err := ioutil.ReadFile("./data/testDataMovies.json")
+//		if err != nil {
+//			return Items{}, err
+//		}
+//		var moviesResult Items
+//		err = json.Unmarshal(data, &moviesResult)
+//		if err != nil {
+//			return Items{}, err
+//		}
+//		return moviesResult, nil
+//	}
+var itemsData []models.Item
+var collectionData = binding.NewUntypedList()
 
 func main() {
 
@@ -45,10 +47,10 @@ func main() {
 	testItem2 := models.NewItem("Animals", "Cat")
 	testItem2.AddTag("Test Tag")
 
-	itemsData := []models.Item{
+	itemsData = []models.Item{
 		testItem1,
 		testItem2,
-		models.NewItemwithLabelTag("Animals", "Bird", []string{"Test Label"}, []string{"Test Tag"}),
+		models.NewItemwithLabelTag("Animals", "Bird", "A bird", []string{"Test Label"}, []string{"Test Tag"}),
 		models.NewItem("Animals", "Horse"),
 		models.NewItem("Movies", "Avatar"),
 		models.NewItem("Movies", "I am Legend"),
@@ -92,9 +94,10 @@ func main() {
 
 	//Search bar
 	collectionSearchBar := widget.NewEntry()
+	// Collection filter
+	//collectionFilter := widget.NewSelectEntry()
 
 	// Item list binding
-	collectionData := binding.NewUntypedList()
 	for _, t := range itemsData {
 		collectionData.Append(t)
 	}
@@ -180,6 +183,7 @@ func main() {
 			itemLabelData.Append(labelEntry.Text)
 			collectionData.SetValue(currentItemID, data)
 			labelEntry.Text = ""
+			SaveData()
 			labelEntry.Refresh()
 		}
 	})
@@ -201,6 +205,7 @@ func main() {
 			itemTagData.Append(tagEntry.Text)
 			collectionData.SetValue(currentItemID, data)
 			tagEntry.Text = ""
+			SaveData()
 			tagEntry.Refresh()
 		}
 	})
@@ -246,8 +251,7 @@ func main() {
 			for _, tag := range data.Tags {
 				itemTagData.Append(tag)
 			}
-			fieldValue := data.Collection
-			itemData.SetText(fieldValue)
+			itemName.SetText(data.Name)
 		} else {
 			fmt.Println("Data not found")
 		}
@@ -347,4 +351,23 @@ func main() {
 	w.SetContent(content)
 	w.Resize(fyne.NewSize(1200, 800))
 	w.ShowAndRun()
+}
+
+func SaveData() {
+	fmt.Println("Save")
+	var savedData []models.Item
+	data, _ := collectionData.Get()
+
+	for _, data := range data {
+		if item, ok := data.(models.Item); ok {
+			savedData = append(savedData, models.NewItemwithLabelTag(
+				item.Collection,
+				item.Name,
+				item.Description,
+				item.Labels,
+				item.Tags))
+		}
+	}
+
+	itemsData = savedData
 }
