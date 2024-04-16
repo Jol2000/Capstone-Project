@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"hello/models"
 	"image/color"
+	"io/ioutil"
 	"strings"
 
 	"fyne.io/fyne/v2"
@@ -25,22 +27,52 @@ import (
 // 	Genre string `json:"Genre"`
 // }
 
-//	func LoadMovieData() (Items, error) {
-//		data, err := ioutil.ReadFile("./data/testDataMovies.json")
-//		if err != nil {
-//			return Items{}, err
-//		}
-//		var moviesResult Items
-//		err = json.Unmarshal(data, &moviesResult)
-//		if err != nil {
-//			return Items{}, err
-//		}
-//		return moviesResult, nil
-//	}
+func LoadMovieData() ([]models.Item, error) {
+	var resultData []models.Item
+	items, _ := ioutil.ReadDir("./data/collections")
+	for _, item := range items {
+		if item.IsDir() {
+			// subitems, _ := ioutil.ReadDir(item.Name())
+			// for _, subitem := range subitems {
+			// 	if !subitem.IsDir() {
+			// 		// handle file there
+			// 		fmt.Println(item.Name() + "/" + subitem.Name())
+			// 	}
+			// }
+		} else {
+			if strings.Split((item.Name()), ".")[1] == "JSON" {
+				fmt.Println("Loading: ", item.Name())
+				var result []models.Item
+
+				data, err := ioutil.ReadFile("./data/collections/" + item.Name())
+				if err != nil {
+					fmt.Println("Read data failure", err)
+					return result, err
+				}
+				var item models.Item
+				err = json.Unmarshal(data, &item)
+				if err != nil {
+					fmt.Println("Load data failure: ", err)
+					return result, err
+				}
+				fmt.Println(item)
+				resultData = append(resultData, item)
+			}
+		}
+	}
+	fmt.Println("Load data success")
+	return resultData, nil
+}
+
 var itemsData []models.Item
 var collectionData = binding.NewUntypedList()
 
 func main() {
+
+	dataTest, _ := LoadMovieData()
+	for _, item := range dataTest {
+		item.String()
+	}
 
 	testItem1 := models.NewItem("Animals", "Dog")
 	testItem1.AddLabel("Label: Test")
@@ -95,7 +127,8 @@ func main() {
 	//Search bar
 	collectionSearchBar := widget.NewEntry()
 	// Collection filter
-	//collectionFilter := widget.NewSelectEntry()
+	collectionsList := []string{"1", "2", "3"}
+	collectionFilter := widget.NewSelectEntry(collectionsList)
 
 	// Item list binding
 	for _, t := range itemsData {
@@ -226,7 +259,7 @@ func main() {
 	itemDataContainer := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
 	dataDisplayContainer := container.NewHSplit(collectionList, itemDataContainer)
 	dataDisplayContainer.Offset = 0.3
-	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar, editItemButton)
+	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar, editItemButton, collectionFilter)
 	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
 
 	collectionList.OnSelected = func(id widget.ListItemID) {
