@@ -34,13 +34,13 @@ func NewItemwithLabelTag(collection string, name string, description string, lab
 	}
 }
 
-func (item Item) AddTag(tag string) {
+func (item *Item) AddTag(tag string) {
 	item.Tags = append(item.Tags, tag)
 }
 
-func (item Item) AddLabel(label string) {
+func (item *Item) AddLabel(label string) {
 	item.Labels = append(item.Labels, label)
-	fmt.Println("Added label: ", label)
+	fmt.Println("Updated Labels: ", item.Labels)
 }
 
 func (t Item) String() string {
@@ -65,5 +65,72 @@ func (t *Items) AddItem(itemInput Item) {
 func (t *Items) AddItems(itemInputs []Item) {
 	for _, item := range itemInputs {
 		t.AddItem(item)
+	}
+}
+
+func (t *Item) UpdateItem(itemInput Item) {
+	*t = itemInput
+}
+
+func (t *Items) UpdateItem(itemInput Item) {
+	for i, item := range t.Items {
+		if item.Name == itemInput.Name {
+			t.Items[i].UpdateItem(itemInput)
+			fmt.Println("Updated Item: ", item.Name)
+		}
+	}
+}
+
+func (t Items) PrintData() {
+	for _, item := range t.Items {
+		fmt.Println("Coll: ", item.Collection)
+		fmt.Println("Name: ", item.Name)
+		fmt.Println("Desc: ", item.Description)
+
+		fmt.Println("Labels: ")
+		for _, label := range item.Labels {
+			fmt.Println(label)
+		}
+
+		fmt.Println("Tags: ")
+		for _, tag := range item.Tags {
+			fmt.Println(tag)
+		}
+	}
+}
+
+func (t Items) PrintItemData(itemName string) {
+	for _, item := range t.Items {
+		if item.Name == itemName {
+			fmt.Println("Coll: ", item.Collection)
+			fmt.Println("Name: ", item.Name)
+			fmt.Println("Desc: ", item.Description)
+
+			fmt.Println("Labels: ")
+			for _, label := range item.Labels {
+				fmt.Println(label)
+			}
+
+			fmt.Println("Tags: ")
+			for _, tag := range item.Tags {
+				fmt.Println(tag)
+			}
+		}
+	}
+}
+
+func (t Item) PrintItemData() {
+	fmt.Println("Coll: ", t.Collection)
+	fmt.Println("Name: ", t.Name)
+	fmt.Println("Desc: ", t.Description)
+
+	fmt.Println("Labels: ")
+	for _, label := range t.Labels {
+		fmt.Println(label)
+	}
+
+	fmt.Println("Tags: ")
+	for _, tag := range t.Tags {
+		fmt.Println(tag)
 	}
 }

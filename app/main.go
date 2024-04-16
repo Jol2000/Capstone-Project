@@ -75,7 +75,6 @@ func main() {
 	}
 
 	testItem1 := models.NewItem("Animals", "Dog")
-	testItem1.AddLabel("Label: Test")
 	testItem2 := models.NewItem("Animals", "Cat")
 	testItem2.AddTag("Test Tag")
 
@@ -212,11 +211,14 @@ func main() {
 	labelAddButton := widget.NewButton("  +  ", func() {
 		rawData, _ := collectionData.GetValue(currentItemID)
 		if data, ok := rawData.(models.Item); ok {
-			data.Labels = append(data.Labels, labelEntry.Text)
+			data.AddLabel(labelEntry.Text)
+			data.PrintItemData()
 			itemLabelData.Append(labelEntry.Text)
 			collectionData.SetValue(currentItemID, data)
+			itemsData.UpdateItem(data)
+			itemsData.PrintItemData(data.Name)
 			labelEntry.Text = ""
-			SaveData()
+			//SaveData()
 			labelEntry.Refresh()
 		}
 	})
@@ -238,7 +240,7 @@ func main() {
 			itemTagData.Append(tagEntry.Text)
 			collectionData.SetValue(currentItemID, data)
 			tagEntry.Text = ""
-			SaveData()
+			//SaveData()
 			tagEntry.Refresh()
 		}
 	})
