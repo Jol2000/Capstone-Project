@@ -1,5 +1,5 @@
 {
-    "data": [
+    "items": [
     {
         "Collection": "Cars",
         "Name": "Polo GTI",
@@ -16,8 +16,8 @@
             "Classic",
             "Ferrari"
         ]
-    },
-    {
+     },
+     {
         "Collection": "Cars",
         "Name": "X-Trail",
         "Description": "Nissan X-Trail",
@@ -25,7 +25,7 @@
             "4WD",
             "White",
             "Modern",
-            "Volkswagon"
+            "Nissan"
         ],
         "Labels": [
             "Slow",
@@ -33,7 +33,6 @@
             "Classic",
             "Ferrari"
         ]
-    }
+     }
     ]
-
 }

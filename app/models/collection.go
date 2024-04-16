@@ -2,12 +2,16 @@ package models
 
 import "fmt"
 
+type Items struct {
+	Items []Item `json:"items"`
+}
+
 type Item struct {
-	Collection  string
-	Name        string
-	Description string
-	Tags        []string
-	Labels      []string
+	Collection  string   `json:"collection"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Tags        []string `json:"tags"`
+	Labels      []string `json:"labels"`
 }
 
 func NewItem(collection string, name string) Item {
@@ -41,4 +45,8 @@ func (item Item) AddLabel(label string) {
 
 func (t Item) String() string {
 	return fmt.Sprintf("%s - $t", t.Collection, t.Name, t.Labels, t.Tags)
+}
+
+func (t Items) AddItem(item Item) {
+	t.Items = append(t.Items, item)
 }

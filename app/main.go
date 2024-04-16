@@ -27,8 +27,8 @@ import (
 // 	Genre string `json:"Genre"`
 // }
 
-func LoadMovieData() ([]models.Item, error) {
-	var resultData []models.Item
+func LoadMovieData() (models.Items, error) {
+	var resultData models.Items
 	items, _ := ioutil.ReadDir("./data/collections")
 	for _, item := range items {
 		if item.IsDir() {
@@ -42,21 +42,21 @@ func LoadMovieData() ([]models.Item, error) {
 		} else {
 			if strings.Split((item.Name()), ".")[1] == "JSON" {
 				fmt.Println("Loading: ", item.Name())
-				var result []models.Item
+				var result models.Items
 
 				data, err := ioutil.ReadFile("./data/collections/" + item.Name())
 				if err != nil {
 					fmt.Println("Read data failure", err)
 					return result, err
 				}
-				var item models.Item
-				err = json.Unmarshal(data, &item)
+				var items models.Items
+				err = json.Unmarshal(data, &items)
 				if err != nil {
 					fmt.Println("Load data failure: ", err)
 					return result, err
 				}
-				fmt.Println(item)
-				resultData = append(resultData, item)
+				fmt.Println(items)
+				resultData.Items = append(resultData.Items, items.Items...)
 			}
 		}
 	}
@@ -70,7 +70,7 @@ var collectionData = binding.NewUntypedList()
 func main() {
 
 	dataTest, _ := LoadMovieData()
-	for _, item := range dataTest {
+	for _, item := range dataTest.Items {
 		item.String()
 	}
 
