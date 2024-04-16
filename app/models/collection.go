@@ -47,6 +47,23 @@ func (t Item) String() string {
 	return fmt.Sprintf("%s - $t", t.Collection, t.Name, t.Labels, t.Tags)
 }
 
-func (t Items) AddItem(item Item) {
-	t.Items = append(t.Items, item)
+func (t *Items) AddItem(itemInput Item) {
+	contains := false
+	for _, item := range t.Items {
+		if item.Name == itemInput.Name {
+			contains = true
+		}
+	}
+	if !contains {
+		fmt.Println("Length1: ", len(t.Items))
+		t.Items = append(t.Items, itemInput)
+		fmt.Println("Length2: ", len(t.Items))
+		fmt.Println("Added Item: ", itemInput.Name)
+	}
+}
+
+func (t *Items) AddItems(itemInputs []Item) {
+	for _, item := range itemInputs {
+		t.AddItem(item)
+	}
 }

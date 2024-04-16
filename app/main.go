@@ -64,7 +64,7 @@ func LoadMovieData() (models.Items, error) {
 	return resultData, nil
 }
 
-var itemsData []models.Item
+var itemsData models.Items
 var collectionData = binding.NewUntypedList()
 
 func main() {
@@ -79,17 +79,17 @@ func main() {
 	testItem2 := models.NewItem("Animals", "Cat")
 	testItem2.AddTag("Test Tag")
 
-	itemsData = []models.Item{
-		testItem1,
-		testItem2,
-		models.NewItemwithLabelTag("Animals", "Bird", "A bird", []string{"Test Label"}, []string{"Test Tag"}),
-		models.NewItem("Animals", "Horse"),
-		models.NewItem("Movies", "Avatar"),
-		models.NewItem("Movies", "I am Legend"),
-		models.NewItem("Movies", "TMNT"),
-		models.NewItem("Movies", "No country for old men"),
-		models.NewItem("Movies", "Inception"),
-	}
+	//collectionData.Append(testItem1)
+	itemsData.AddItem(testItem1)
+	itemsData.AddItem(testItem2)
+	itemsData.AddItem(models.NewItemwithLabelTag("Animals", "Bird", "A bird", []string{"Test Label"}, []string{"Test Tag"}))
+	itemsData.AddItem(models.NewItem("Animals", "Horse"))
+	itemsData.AddItem(models.NewItem("Movies", "Avatar"))
+	itemsData.AddItem(models.NewItem("Movies", "I am Legend"))
+	itemsData.AddItem(models.NewItem("Movies", "TMNT"))
+	itemsData.AddItem(models.NewItem("Movies", "No country for old men"))
+	itemsData.AddItem(models.NewItem("Movies", "Inception"))
+	fmt.Println("Length: ", len(itemsData.Items))
 
 	//var currentItem models.Item
 	var currentItemID int
@@ -131,7 +131,7 @@ func main() {
 	collectionFilter := widget.NewSelectEntry(collectionsList)
 
 	// Item list binding
-	for _, t := range itemsData {
+	for _, t := range itemsData.Items {
 		collectionData.Append(t)
 	}
 
@@ -299,7 +299,7 @@ func main() {
 			resetData, _ := collectionData.Get()
 			resetData = resetData[:0]
 			collectionData.Set(resetData)
-			for _, t := range itemsData {
+			for _, t := range itemsData.Items {
 				collectionData.Append(t)
 			}
 			return
@@ -314,7 +314,7 @@ func main() {
 		var addedItems []string
 		//addedItems = append(addedItems, "")
 
-		for _, item := range itemsData {
+		for _, item := range itemsData.Items {
 			for _, searchSplit := range searchInputs {
 				searchSplit = strings.Trim(searchSplit, " ")
 				if searchSplit == "" {
@@ -388,12 +388,12 @@ func main() {
 
 func SaveData() {
 	fmt.Println("Save")
-	var savedData []models.Item
+	var savedData models.Items
 	data, _ := collectionData.Get()
 
 	for _, data := range data {
 		if item, ok := data.(models.Item); ok {
-			savedData = append(savedData, models.NewItemwithLabelTag(
+			savedData.AddItem(models.NewItemwithLabelTag(
 				item.Collection,
 				item.Name,
 				item.Description,
