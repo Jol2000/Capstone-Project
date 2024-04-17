@@ -1,38 +1,39 @@
 {
-    "items": [
-    {
-        "Collection": "Cars",
-        "Name": "Polo GTI",
-        "Description": "Volkswagon Polo GTI",
-        "Tags": [
-            "Fast",
-            "Red",
-            "Modern",
-            "Volkswagon"
-        ],
-        "Labels": [
-            "Slow",
-            "Green",
-            "Classic",
-            "Ferrari"
-        ]
-     },
-     {
-        "Collection": "Cars",
-        "Name": "X-Trail",
-        "Description": "Nissan X-Trail",
-        "Tags": [
-            "4WD",
-            "White",
-            "Modern",
-            "Nissan"
-        ],
-        "Labels": [
-            "Slow",
-            "Green",
-            "Classic",
-            "Ferrari"
-        ]
-     }
-    ]
+	"items": [
+		{
+			"collection": "Cars",
+			"name": "Polo GTI",
+			"description": "Volkswagon Polo GTI",
+			"tags": [
+				"Fast",
+				"Red",
+				"Modern",
+				"Volkswagon"
+			],
+			"labels": [
+				"Slow",
+				"Green",
+				"Classic",
+				"Ferrari",
+				"Cool"
+			]
+		},
+		{
+			"collection": "Cars",
+			"name": "X-Trail",
+			"description": "Nissan X-Trail",
+			"tags": [
+				"4WD",
+				"White",
+				"Modern",
+				"Nissan"
+			],
+			"labels": [
+				"Slow",
+				"Green",
+				"Classic",
+				"Ferrari"
+			]
+		}
+	]
 }

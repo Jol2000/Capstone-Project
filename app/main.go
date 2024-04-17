@@ -69,7 +69,7 @@ func DecodeMovieData() (models.Items, error) {
 func EncodeMovieData(data models.Items) {
 	collections := data.CollectionNames()
 	for _, collection := range collections {
-		file, errs := os.Create("data/collections/test.JSON")
+		file, errs := os.Create("data/collections/" + strings.ToLower(collection) + ".JSON")
 		if errs != nil {
 			fmt.Println("Failed to create file:", errs)
 			return
@@ -238,13 +238,11 @@ func main() {
 		rawData, _ := collectionData.GetValue(currentItemID)
 		if data, ok := rawData.(models.Item); ok {
 			data.AddLabel(labelEntry.Text)
-			data.PrintItemData()
 			itemLabelData.Append(labelEntry.Text)
 			collectionData.SetValue(currentItemID, data)
 			itemsData.UpdateItem(data)
-			itemsData.PrintItemData(data.Name)
 			labelEntry.Text = ""
-			//SaveData()
+			EncodeMovieData(itemsData)
 			labelEntry.Refresh()
 		}
 	})
@@ -262,11 +260,12 @@ func main() {
 	tagAddButton := widget.NewButton("  +  ", func() {
 		rawData, _ := collectionData.GetValue(currentItemID)
 		if data, ok := rawData.(models.Item); ok {
-			data.Labels = append(data.Labels, tagEntry.Text)
+			data.AddLabel(tagEntry.Text)
 			itemTagData.Append(tagEntry.Text)
 			collectionData.SetValue(currentItemID, data)
+			itemsData.UpdateItem(data)
 			tagEntry.Text = ""
-			//SaveData()
+			EncodeMovieData(itemsData)
 			tagEntry.Refresh()
 		}
 	})
