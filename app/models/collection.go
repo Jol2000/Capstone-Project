@@ -134,3 +134,47 @@ func (t Item) PrintItemData() {
 		fmt.Println(tag)
 	}
 }
+
+func (items Items) CollectionCount() (numberOfCollections int) {
+	count := 0
+	var countedCollections []string
+	for _, item := range items.Items {
+		used := false
+		for _, collection := range countedCollections {
+			if item.Collection == collection {
+				used = true
+			}
+		}
+		if !used {
+			countedCollections = append(countedCollections, item.Collection)
+			count++
+		}
+	}
+	return count
+}
+
+func (items Items) CollectionNames() (namesOfCollections []string) {
+	var countedCollections []string
+	for _, item := range items.Items {
+		used := false
+		for _, collection := range countedCollections {
+			if item.Collection == collection {
+				used = true
+			}
+		}
+		if !used {
+			countedCollections = append(countedCollections, item.Collection)
+		}
+	}
+	return countedCollections
+}
+
+func (items Items) FilterCollection(collectionFilter string) (output Items) {
+	var filteredCollection Items
+	for _, item := range items.Items {
+		if item.Collection == collectionFilter {
+			filteredCollection.AddItem(item)
+		}
+	}
+	return filteredCollection
+}

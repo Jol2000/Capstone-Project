@@ -6,6 +6,8 @@ import (
 	"hello/models"
 	"image/color"
 	"io/ioutil"
+	"log"
+	"os"
 	"strings"
 
 	"fyne.io/fyne/v2"
@@ -27,7 +29,7 @@ import (
 // 	Genre string `json:"Genre"`
 // }
 
-func LoadMovieData() (models.Items, error) {
+func DecodeMovieData() (models.Items, error) {
 	var resultData models.Items
 	items, _ := ioutil.ReadDir("./data/collections")
 	for _, item := range items {
@@ -55,7 +57,7 @@ func LoadMovieData() (models.Items, error) {
 					fmt.Println("Load data failure: ", err)
 					return result, err
 				}
-				fmt.Println(items)
+				//fmt.Println(items)
 				resultData.Items = append(resultData.Items, items.Items...)
 			}
 		}
@@ -64,31 +66,55 @@ func LoadMovieData() (models.Items, error) {
 	return resultData, nil
 }
 
+func EncodeMovieData(data models.Items) {
+	collections := data.CollectionNames()
+	for _, collection := range collections {
+		file, errs := os.Create("data/collections/test.JSON")
+		if errs != nil {
+			fmt.Println("Failed to create file:", errs)
+			return
+		}
+		defer file.Close()
+
+		filteredCollection := data.FilterCollection(collection)
+		encodedItem, err := json.MarshalIndent(filteredCollection, "", "\t")
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, errs = file.WriteString(string(encodedItem))
+		if errs != nil {
+			fmt.Println("Failed to write to file:", errs) //print the failed message
+			return
+		}
+	}
+
+}
+
 var itemsData models.Items
 var collectionData = binding.NewUntypedList()
 
 func main() {
 
-	dataTest, _ := LoadMovieData()
-	for _, item := range dataTest.Items {
-		item.String()
-	}
+	dataTest, _ := DecodeMovieData()
+	fmt.Println(dataTest.CollectionNames())
+	EncodeMovieData(dataTest)
+	itemsData = dataTest
 
-	testItem1 := models.NewItem("Animals", "Dog")
-	testItem2 := models.NewItem("Animals", "Cat")
-	testItem2.AddTag("Test Tag")
+	// testItem1 := models.NewItem("Animals", "Dog")
+	// testItem2 := models.NewItem("Animals", "Cat")
+	// testItem2.AddTag("Test Tag")
 
 	//collectionData.Append(testItem1)
-	itemsData.AddItem(testItem1)
-	itemsData.AddItem(testItem2)
-	itemsData.AddItem(models.NewItemwithLabelTag("Animals", "Bird", "A bird", []string{"Test Label"}, []string{"Test Tag"}))
-	itemsData.AddItem(models.NewItem("Animals", "Horse"))
-	itemsData.AddItem(models.NewItem("Movies", "Avatar"))
-	itemsData.AddItem(models.NewItem("Movies", "I am Legend"))
-	itemsData.AddItem(models.NewItem("Movies", "TMNT"))
-	itemsData.AddItem(models.NewItem("Movies", "No country for old men"))
-	itemsData.AddItem(models.NewItem("Movies", "Inception"))
-	fmt.Println("Length: ", len(itemsData.Items))
+	// itemsData.AddItem(testItem1)
+	// itemsData.AddItem(testItem2)
+	// itemsData.AddItem(models.NewItemwithLabelTag("Animals", "Bird", "A bird", []string{"Test Label"}, []string{"Test Tag"}))
+	// itemsData.AddItem(models.NewItem("Animals", "Horse"))
+	// itemsData.AddItem(models.NewItem("Movies", "Avatar"))
+	// itemsData.AddItem(models.NewItem("Movies", "I am Legend"))
+	// itemsData.AddItem(models.NewItem("Movies", "TMNT"))
+	// itemsData.AddItem(models.NewItem("Movies", "No country for old men"))
+	// itemsData.AddItem(models.NewItem("Movies", "Inception"))
+	// fmt.Println("Length: ", len(itemsData.Items))
 
 	//var currentItem models.Item
 	var currentItemID int
@@ -287,6 +313,7 @@ func main() {
 				itemTagData.Append(tag)
 			}
 			itemName.SetText(data.Name)
+			itemDescription.SetText(data.Description)
 		} else {
 			fmt.Println("Data not found")
 		}
