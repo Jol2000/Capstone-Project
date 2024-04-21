@@ -191,6 +191,11 @@ func main() {
 			o.(*widget.Label).Bind(di.(binding.String))
 		})
 
+	labelSelectedID := -1
+	itemLabelsList.OnSelected = func(id widget.ListItemID) {
+		labelSelectedID = id
+	}
+
 	// Tag List
 	// Item Tags
 	inputTagData := []string{}
@@ -229,24 +234,36 @@ func main() {
 	//itemImage := canvas.NewImageFromFile()
 	itemImagePlaceholder := widget.NewLabel("Image Placeholder")
 	// Edit Item
-	editItemButton := widget.NewButton("Edit", func() {
-		fmt.Println("Edit Press")
-	})
+
 	// Label Add
 	labelEntry := widget.NewEntry()
 	labelAddButton := widget.NewButton("  +  ", func() {
 		rawData, _ := collectionData.GetValue(currentItemID)
 		if data, ok := rawData.(models.Item); ok {
 			data.AddLabel(labelEntry.Text)
-			itemLabelData.Append(labelEntry.Text)
+			//itemLabelData.Append(labelEntry.Text)
 			collectionData.SetValue(currentItemID, data)
 			itemsData.UpdateItem(data)
 			labelEntry.Text = ""
-			EncodeMovieData(itemsData)
+			//EncodeMovieData(itemsData)
 			labelEntry.Refresh()
 		}
 	})
-	labelAddButton.Disable()
+	labelRemoveButton := widget.NewButton("  -  ", func() {
+		if labelSelectedID != -1 {
+			rawData, _ := collectionData.GetValue(currentItemID)
+			if data, ok := rawData.(models.Item); ok {
+				data.RemoveLabelID(labelSelectedID)
+				itemLabelData.Set(data.Labels)
+				collectionData.SetValue(currentItemID, data)
+				itemsData.UpdateItem(data)
+				//EncodeMovieData(itemsData)
+				labelEntry.Refresh()
+			}
+		} else {
+			fmt.Println("Please select a label")
+		}
+	})
 	labelEntry.OnChanged = func(input string) {
 		labelAddButton.Disable()
 
@@ -254,6 +271,11 @@ func main() {
 			labelAddButton.Enable()
 		}
 	}
+
+	labelEntry.Hide()
+	labelAddButton.Hide()
+	labelAddButton.Disable()
+	labelRemoveButton.Hide()
 
 	// Tag Add
 	tagEntry := widget.NewEntry()
@@ -278,9 +300,29 @@ func main() {
 		}
 	}
 
+	editing := false
+	var editItemButton *widget.Button
+	editItemButton = widget.NewButton("Edit", func() {
+		if !editing {
+			editing = true
+			labelEntry.Show()
+			labelAddButton.Show()
+			labelRemoveButton.Show()
+			editItemButton.SetText("Save")
+		} else {
+			editing = false
+			labelEntry.Hide()
+			labelAddButton.Hide()
+			labelRemoveButton.Hide()
+			EncodeMovieData(itemsData)
+			editItemButton.SetText("Edit")
+		}
+	})
+
 	// Formatting
 	nameDescriptionImageContainer := container.NewHSplit(itemNameDescriptionContainer, itemImagePlaceholder)
-	itemLabelListWithEntry := container.NewBorder(nil, container.NewBorder(nil, nil, nil, labelAddButton, labelEntry), nil, nil, itemLabelsList)
+	labelAddRemoveButtonContainer := container.NewHBox(labelAddButton, labelRemoveButton)
+	itemLabelListWithEntry := container.NewBorder(nil, container.NewBorder(nil, nil, nil, labelAddRemoveButtonContainer, labelEntry), nil, nil, itemLabelsList)
 	itemTagListWithEntry := container.NewBorder(nil, container.NewBorder(nil, nil, nil, tagAddButton, tagEntry), nil, nil, itemTagsList)
 	labelTagListContainer := container.NewHSplit(itemLabelListWithEntry, itemTagListWithEntry)
 	itemDataContainer := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
@@ -290,6 +332,7 @@ func main() {
 	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
 
 	collectionList.OnSelected = func(id widget.ListItemID) {
+		labelSelectedID = -1
 		rawData, _ := collectionData.GetValue(id)
 		currentItemID = id
 

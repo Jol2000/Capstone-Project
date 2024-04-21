@@ -43,6 +43,14 @@ func (item *Item) AddLabel(label string) {
 	fmt.Println("Updated Labels: ", item.Labels)
 }
 
+func (item *Item) RemoveLabelID(labelID int) {
+	// Check if labelID is within the range of Labels slice
+	if labelID >= 0 && labelID < len(item.Labels) {
+		// Remove the label at labelID position
+		item.Labels = append(item.Labels[:labelID], item.Labels[labelID+1:]...)
+	}
+}
+
 func (t Item) String() string {
 	return fmt.Sprintf("%s - $t", t.Collection, t.Name, t.Labels, t.Tags)
 }
