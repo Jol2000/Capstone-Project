@@ -15,7 +15,9 @@
 				"PG",
 				"Classic",
 				"Space"
-			]
+			],
+			"files": null,
+			"image": ""
 		},
 		{
 			"collection": "Movies",
@@ -32,7 +34,9 @@
 				"PG",
 				"Classic",
 				"Space"
-			]
+			],
+			"files": null,
+			"image": ""
 		}
 	]
 }

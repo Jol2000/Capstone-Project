@@ -12,6 +12,27 @@ type Item struct {
 	Description string   `json:"description"`
 	Tags        []string `json:"tags"`
 	Labels      []string `json:"labels"`
+	Files       []File   `json:"files"`
+	Image       string   `json:"image"`
+}
+
+type File struct {
+	FileName     string `json:"fileName"`
+	FileLocation string `json:"fileLocation"`
+}
+
+func NewFile(name string, location string) File {
+	if name == "" {
+		return File{
+			FileName:     location,
+			FileLocation: location,
+		}
+	} else {
+		return File{
+			FileName:     name,
+			FileLocation: location,
+		}
+	}
 }
 
 func NewItem(collection string, name string) Item {

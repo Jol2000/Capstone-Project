@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"hello/models"
 	"image/color"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"fyne.io/fyne/v2"
@@ -87,11 +90,11 @@ func EncodeMovieData(data models.Items) {
 			return
 		}
 	}
-
 }
 
 var itemsData models.Items
 var collectionData = binding.NewUntypedList()
+var currentItemID int
 
 func main() {
 
@@ -117,7 +120,7 @@ func main() {
 	// fmt.Println("Length: ", len(itemsData.Items))
 
 	//var currentItem models.Item
-	var currentItemID int
+	labelSelectedID := -1
 
 	a := app.New()
 	w := a.NewWindow("Treasure It Desktop")
@@ -191,11 +194,6 @@ func main() {
 			o.(*widget.Label).Bind(di.(binding.String))
 		})
 
-	labelSelectedID := -1
-	itemLabelsList.OnSelected = func(id widget.ListItemID) {
-		labelSelectedID = id
-	}
-
 	// Tag List
 	// Item Tags
 	inputTagData := []string{}
@@ -214,6 +212,37 @@ func main() {
 		func(di binding.DataItem, o fyne.CanvasObject) {
 			o.(*widget.Label).Bind(di.(binding.String))
 		})
+
+	//File List
+	fileList := widget.NewList(
+		func() int {
+			// Number of items in the list
+			return len(getFileNames())
+		},
+		func() fyne.CanvasObject {
+			// Create an empty canvas object for each item
+			return widget.NewLabel("")
+		},
+		func(index int, item fyne.CanvasObject) {
+			// Update the label with file name
+			item.(*widget.Label).SetText(getFileNames()[index])
+		},
+	)
+
+	// Set onItemSelected callback for list items
+	fileList.OnSelected = func(index int) {
+		fileName := getFileNames()[index]
+		openFile(fileName)
+	}
+
+	// Create a container for the list
+	listContainer := container.NewVBox(
+		widget.NewLabel("Files:"),
+		fileList,
+	)
+	w.SetOnDropped(dropHandler)
+
+	//------------------------------------------------------------------
 
 	// Icons
 	editIcon := canvas.NewImageFromFile("../images/edit_icon.png")
@@ -241,7 +270,7 @@ func main() {
 		rawData, _ := collectionData.GetValue(currentItemID)
 		if data, ok := rawData.(models.Item); ok {
 			data.AddLabel(labelEntry.Text)
-			//itemLabelData.Append(labelEntry.Text)
+			itemLabelData.Append(labelEntry.Text)
 			collectionData.SetValue(currentItemID, data)
 			itemsData.UpdateItem(data)
 			labelEntry.Text = ""
@@ -249,6 +278,7 @@ func main() {
 			labelEntry.Refresh()
 		}
 	})
+
 	labelRemoveButton := widget.NewButton("  -  ", func() {
 		if labelSelectedID != -1 {
 			rawData, _ := collectionData.GetValue(currentItemID)
@@ -272,10 +302,16 @@ func main() {
 		}
 	}
 
+	itemLabelsList.OnSelected = func(id widget.ListItemID) {
+		labelSelectedID = id
+		labelRemoveButton.Enable()
+	}
+
 	labelEntry.Hide()
 	labelAddButton.Hide()
 	labelAddButton.Disable()
 	labelRemoveButton.Hide()
+	labelRemoveButton.Disable()
 
 	// Tag Add
 	tagEntry := widget.NewEntry()
@@ -300,6 +336,7 @@ func main() {
 		}
 	}
 
+	// Edit button
 	editing := false
 	var editItemButton *widget.Button
 	editItemButton = widget.NewButton("Edit", func() {
@@ -308,6 +345,7 @@ func main() {
 			labelEntry.Show()
 			labelAddButton.Show()
 			labelRemoveButton.Show()
+			editNameDescription(itemNameDescriptionContainer)
 			editItemButton.SetText("Save")
 		} else {
 			editing = false
@@ -315,6 +353,7 @@ func main() {
 			labelAddButton.Hide()
 			labelRemoveButton.Hide()
 			EncodeMovieData(itemsData)
+			saveNameDescription(itemNameDescriptionContainer, currentItemID)
 			editItemButton.SetText("Edit")
 		}
 	})
@@ -324,7 +363,8 @@ func main() {
 	labelAddRemoveButtonContainer := container.NewHBox(labelAddButton, labelRemoveButton)
 	itemLabelListWithEntry := container.NewBorder(nil, container.NewBorder(nil, nil, nil, labelAddRemoveButtonContainer, labelEntry), nil, nil, itemLabelsList)
 	itemTagListWithEntry := container.NewBorder(nil, container.NewBorder(nil, nil, nil, tagAddButton, tagEntry), nil, nil, itemTagsList)
-	labelTagListContainer := container.NewHSplit(itemLabelListWithEntry, itemTagListWithEntry)
+	_ = itemTagListWithEntry
+	labelTagListContainer := container.NewHSplit(itemLabelListWithEntry, listContainer)
 	itemDataContainer := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
 	dataDisplayContainer := container.NewHSplit(collectionList, itemDataContainer)
 	dataDisplayContainer.Offset = 0.3
@@ -474,4 +514,108 @@ func SaveData() {
 	}
 
 	itemsData = savedData
+}
+
+// Function to get the list of file names in the /data/files folder
+func getFileNames() []string {
+	var fileNames []string
+	files, err := os.ReadDir("./data/files")
+	if err != nil {
+		fmt.Println("Error reading directory:", err)
+		return fileNames
+	}
+	for _, file := range files {
+		fileNames = append(fileNames, file.Name())
+	}
+	return fileNames
+}
+
+// Function to handle dropped files
+func handleDrop(uri string) {
+	srcFile, err := os.Open(uri)
+	if err != nil {
+		fmt.Println("Error opening dropped file:", err)
+		return
+	}
+	defer srcFile.Close()
+
+	dstPath := filepath.Join(".", "data", "files", filepath.Base(uri))
+	dstFile, err := os.Create(dstPath)
+	if err != nil {
+		fmt.Println("Error creating destination file:", err)
+		return
+	}
+	defer dstFile.Close()
+
+	_, err = io.Copy(dstFile, srcFile)
+	if err != nil {
+		fmt.Println("Error copying file contents:", err)
+		return
+	}
+}
+
+// Function to open a file
+func openFile(fileName string) {
+	filePath := filepath.Join(".", "data", "files", fileName)
+	cmd := fmt.Sprintf("xdg-open %s", filePath) // On Linux, use xdg-open to open the file
+	err := exec.Command("sh", "-c", cmd).Run()
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+	}
+}
+
+// dropHandler handles dropped files onto the window
+// dropHandler handles dropped files onto the window
+func dropHandler(pos fyne.Position, uris []fyne.URI) {
+	for _, uri := range uris {
+		handleDrop(uri.Path())
+	}
+	// Refresh the list after handling drops
+	//fileList.Refresh()
+}
+
+func editNameDescription(itemNameDescriptionContainer *fyne.Container) {
+	// Assuming itemNameDescriptionContainer contains two labels (Name and Description)
+	nameLabel := itemNameDescriptionContainer.Objects[1].(*widget.Label)
+	descriptionLabel := itemNameDescriptionContainer.Objects[0].(*widget.Label)
+
+	// Create entry fields to replace the labels
+	nameEntry := widget.NewEntry()
+	nameEntry.SetText(nameLabel.Text)
+
+	descriptionEntry := widget.NewEntry()
+	descriptionEntry.SetText(descriptionLabel.Text)
+
+	// Create a new container to hold both entry fields
+	newContainer := container.NewBorder(nameEntry, nil, nil, nil, descriptionEntry)
+
+	// Replace the content of the existing container with the new container
+	itemNameDescriptionContainer.Objects = []fyne.CanvasObject{newContainer}
+
+	// Refresh the container to reflect the changes
+	itemNameDescriptionContainer.Refresh()
+}
+
+func saveNameDescription(itemNameDescriptionContainer *fyne.Container, currentItemID int) {
+	nameEntry := itemNameDescriptionContainer.Objects[1].(*widget.Entry)
+	descriptionEntry := itemNameDescriptionContainer.Objects[3].(*widget.Entry)
+
+	// Update the data in the collection
+	rawData, _ := collectionData.GetValue(currentItemID)
+	if data, ok := rawData.(models.Item); ok {
+		data.Name = nameEntry.Text
+		data.Description = descriptionEntry.Text
+		SaveData()
+	}
+
+	// Create new label widgets with the updated values
+	nameLabel := widget.NewLabel(nameEntry.Text)
+	descriptionLabel := widget.NewLabel(descriptionEntry.Text)
+
+	// Replace the entry fields with the new labels in the container
+	newItemNameDescriptionContainer := container.NewBorder(nameLabel, nil, nil, nil, descriptionLabel)
+	itemNameDescriptionContainer.Objects = []fyne.CanvasObject{newItemNameDescriptionContainer}
+
+	// Refresh the container to reflect the changes
+	itemNameDescriptionContainer.Refresh()
 }

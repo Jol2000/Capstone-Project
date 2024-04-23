@@ -12,10 +12,11 @@
 			],
 			"labels": [
 				"Slow",
-				"Green",
 				"Classic",
-				"Ferrari"
-			]
+				"Green"
+			],
+			"files": null,
+			"image": ""
 		},
 		{
 			"collection": "Cars",
@@ -32,7 +33,9 @@
 				"Green",
 				"Classic",
 				"Ferrari"
-			]
+			],
+			"files": null,
+			"image": ""
 		}
 	]
 }
