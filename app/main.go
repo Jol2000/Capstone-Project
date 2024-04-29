@@ -345,6 +345,7 @@ func main() {
 			labelEntry.Show()
 			labelAddButton.Show()
 			labelRemoveButton.Show()
+			//collectionList.Hide()
 			editNameDescription(itemNameDescriptionContainer)
 			editItemButton.SetText("Save")
 		} else {
@@ -354,6 +355,7 @@ func main() {
 			labelRemoveButton.Hide()
 			EncodeMovieData(itemsData)
 			saveNameDescription(itemNameDescriptionContainer, currentItemID)
+			//collectionList.Show()
 			editItemButton.SetText("Edit")
 		}
 	})
@@ -585,12 +587,16 @@ func editNameDescription(itemNameDescriptionContainer *fyne.Container) {
 
 	descriptionEntry := widget.NewEntry()
 	descriptionEntry.SetText(descriptionLabel.Text)
+	//itemNameDescriptionContainer := container.NewBorder(itemName, nil, nil, nil, itemDescription)
 
 	// Create a new container to hold both entry fields
 	newContainer := container.NewBorder(nameEntry, nil, nil, nil, descriptionEntry)
 
 	// Replace the content of the existing container with the new container
-	itemNameDescriptionContainer.Objects = []fyne.CanvasObject{newContainer}
+	fmt.Println("Initial: ", itemNameDescriptionContainer.Objects[0])
+	itemNameDescriptionContainer.Objects = newContainer.Objects
+	fmt.Println("Updated: ", itemNameDescriptionContainer.Objects[0])
+	itemNameDescriptionContainer.Layout = newContainer.Layout
 
 	// Refresh the container to reflect the changes
 	itemNameDescriptionContainer.Refresh()
@@ -598,24 +604,24 @@ func editNameDescription(itemNameDescriptionContainer *fyne.Container) {
 
 func saveNameDescription(itemNameDescriptionContainer *fyne.Container, currentItemID int) {
 	nameEntry := itemNameDescriptionContainer.Objects[1].(*widget.Entry)
-	descriptionEntry := itemNameDescriptionContainer.Objects[3].(*widget.Entry)
+	descriptionEntry := itemNameDescriptionContainer.Objects[0].(*widget.Entry)
 
 	// Update the data in the collection
-	rawData, _ := collectionData.GetValue(currentItemID)
-	if data, ok := rawData.(models.Item); ok {
-		data.Name = nameEntry.Text
-		data.Description = descriptionEntry.Text
-		SaveData()
-	}
+	// rawData, _ := collectionData.GetValue(currentItemID)
+	// if data, ok := rawData.(models.Item); ok {
+	// 	data.Name = nameEntry.Text
+	// 	data.Description = descriptionEntry.Text
+	// 	SaveData()
+	// }
 
 	// Create new label widgets with the updated values
 	nameLabel := widget.NewLabel(nameEntry.Text)
 	descriptionLabel := widget.NewLabel(descriptionEntry.Text)
-
-	// Replace the entry fields with the new labels in the container
+	// // Replace the entry fields with the new labels in the container
 	newItemNameDescriptionContainer := container.NewBorder(nameLabel, nil, nil, nil, descriptionLabel)
-	itemNameDescriptionContainer.Objects = []fyne.CanvasObject{newItemNameDescriptionContainer}
+	itemNameDescriptionContainer.Objects = newItemNameDescriptionContainer.Objects
+	itemNameDescriptionContainer.Layout = newItemNameDescriptionContainer.Layout
 
-	// Refresh the container to reflect the changes
+	// // Refresh the container to reflect the changes
 	itemNameDescriptionContainer.Refresh()
 }
