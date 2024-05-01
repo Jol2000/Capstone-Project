@@ -3,7 +3,7 @@
 		{
 			"collection": "Cars",
 			"name": "Polo GTI",
-			"description": "Volkswagon Polo GTI",
+			"description": "Volkswagon Polo GTI, A sporty version of the Polo model.",
 			"tags": [
 				"Fast",
 				"Red",
@@ -12,8 +12,7 @@
 			],
 			"labels": [
 				"Slow",
-				"Classic",
-				"Green"
+				"Classic"
 			],
 			"files": null,
 			"image": ""

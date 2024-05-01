@@ -287,7 +287,7 @@ func main() {
 				itemLabelData.Set(data.Labels)
 				collectionData.SetValue(currentItemID, data)
 				itemsData.UpdateItem(data)
-				//EncodeMovieData(itemsData)
+				EncodeMovieData(itemsData)
 				labelEntry.Refresh()
 			}
 		} else {
@@ -353,9 +353,8 @@ func main() {
 			labelEntry.Hide()
 			labelAddButton.Hide()
 			labelRemoveButton.Hide()
-			EncodeMovieData(itemsData)
 			saveNameDescription(itemNameDescriptionContainer, currentItemID)
-			//collectionList.Show()
+			EncodeMovieData(itemsData)
 			editItemButton.SetText("Edit")
 		}
 	})
@@ -396,8 +395,7 @@ func main() {
 			for _, tag := range data.Tags {
 				itemTagData.Append(tag)
 			}
-			itemName.SetText(data.Name)
-			itemDescription.SetText(data.Description)
+			SetNameDescription(itemNameDescriptionContainer, data.Name, data.Description, editing)
 		} else {
 			fmt.Println("Data not found")
 		}
@@ -587,7 +585,6 @@ func editNameDescription(itemNameDescriptionContainer *fyne.Container) {
 
 	descriptionEntry := widget.NewEntry()
 	descriptionEntry.SetText(descriptionLabel.Text)
-	//itemNameDescriptionContainer := container.NewBorder(itemName, nil, nil, nil, itemDescription)
 
 	// Create a new container to hold both entry fields
 	newContainer := container.NewBorder(nameEntry, nil, nil, nil, descriptionEntry)
@@ -607,12 +604,14 @@ func saveNameDescription(itemNameDescriptionContainer *fyne.Container, currentIt
 	descriptionEntry := itemNameDescriptionContainer.Objects[0].(*widget.Entry)
 
 	// Update the data in the collection
-	// rawData, _ := collectionData.GetValue(currentItemID)
-	// if data, ok := rawData.(models.Item); ok {
-	// 	data.Name = nameEntry.Text
-	// 	data.Description = descriptionEntry.Text
-	// 	SaveData()
-	// }
+	rawData, _ := collectionData.GetValue(currentItemID)
+	if data, ok := rawData.(models.Item); ok {
+		data.Name = nameEntry.Text
+		fmt.Println(nameEntry.Text)
+		data.Description = descriptionEntry.Text
+		collectionData.SetValue(currentItemID, data)
+		SaveData()
+	}
 
 	// Create new label widgets with the updated values
 	nameLabel := widget.NewLabel(nameEntry.Text)
@@ -624,4 +623,24 @@ func saveNameDescription(itemNameDescriptionContainer *fyne.Container, currentIt
 
 	// // Refresh the container to reflect the changes
 	itemNameDescriptionContainer.Refresh()
+}
+
+func SetNameDescription(itemNameDescriptionContainer *fyne.Container, name string, description string, editing bool) {
+	if editing {
+		nameEntry := widget.NewEntry()
+		nameEntry.SetText(name)
+		descriptionEntry := widget.NewEntry()
+		descriptionEntry.SetText(description)
+
+		newContainer := container.NewBorder(nameEntry, nil, nil, nil, descriptionEntry)
+		itemNameDescriptionContainer.Objects = newContainer.Objects
+		itemNameDescriptionContainer.Layout = newContainer.Layout
+	} else {
+		nameLabel := widget.NewLabel(name)
+		descriptionLabel := widget.NewLabel(description)
+
+		newContainer := container.NewBorder(nameLabel, nil, nil, nil, descriptionLabel)
+		itemNameDescriptionContainer.Objects = newContainer.Objects
+		itemNameDescriptionContainer.Layout = newContainer.Layout
+	}
 }
