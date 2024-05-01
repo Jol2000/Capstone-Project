@@ -59,6 +59,10 @@ func (item *Item) AddTag(tag string) {
 	item.Tags = append(item.Tags, tag)
 }
 
+func (item *Item) AddFile(file File) {
+	item.Files = append(item.Files, file)
+}
+
 func (item *Item) AddLabel(label string) {
 	item.Labels = append(item.Labels, label)
 	fmt.Println("Updated Labels: ", item.Labels)

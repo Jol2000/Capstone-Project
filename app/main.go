@@ -99,25 +99,8 @@ var currentItemID int
 func main() {
 
 	dataTest, _ := DecodeMovieData()
-	fmt.Println(dataTest.CollectionNames())
 	EncodeMovieData(dataTest)
 	itemsData = dataTest
-
-	// testItem1 := models.NewItem("Animals", "Dog")
-	// testItem2 := models.NewItem("Animals", "Cat")
-	// testItem2.AddTag("Test Tag")
-
-	//collectionData.Append(testItem1)
-	// itemsData.AddItem(testItem1)
-	// itemsData.AddItem(testItem2)
-	// itemsData.AddItem(models.NewItemwithLabelTag("Animals", "Bird", "A bird", []string{"Test Label"}, []string{"Test Tag"}))
-	// itemsData.AddItem(models.NewItem("Animals", "Horse"))
-	// itemsData.AddItem(models.NewItem("Movies", "Avatar"))
-	// itemsData.AddItem(models.NewItem("Movies", "I am Legend"))
-	// itemsData.AddItem(models.NewItem("Movies", "TMNT"))
-	// itemsData.AddItem(models.NewItem("Movies", "No country for old men"))
-	// itemsData.AddItem(models.NewItem("Movies", "Inception"))
-	// fmt.Println("Length: ", len(itemsData.Items))
 
 	//var currentItem models.Item
 	labelSelectedID := -1
@@ -177,7 +160,7 @@ func main() {
 
 	// Label List
 	// Item Labels
-	inputLabelData := []string{"L1", "L2", "L3"}
+	inputLabelData := []string{}
 
 	itemLabelData := binding.NewStringList()
 
@@ -192,7 +175,8 @@ func main() {
 		},
 		func(di binding.DataItem, o fyne.CanvasObject) {
 			o.(*widget.Label).Bind(di.(binding.String))
-		})
+		},
+	)
 
 	// Tag List
 	// Item Tags
@@ -211,21 +195,27 @@ func main() {
 		},
 		func(di binding.DataItem, o fyne.CanvasObject) {
 			o.(*widget.Label).Bind(di.(binding.String))
-		})
+		},
+	)
 
 	//File List
-	fileList := widget.NewList(
-		func() int {
-			// Number of items in the list
-			return len(getFileNames())
-		},
+	inputFileData := []models.File{}
+
+	itemFileData := binding.NewUntypedList()
+
+	for _, t := range inputFileData {
+		itemFileData.Append(t)
+	}
+
+	fileList := widget.NewListWithData(
+		itemFileData,
 		func() fyne.CanvasObject {
-			// Create an empty canvas object for each item
 			return widget.NewLabel("")
 		},
-		func(index int, item fyne.CanvasObject) {
-			// Update the label with file name
-			item.(*widget.Label).SetText(getFileNames()[index])
+		func(di binding.DataItem, o fyne.CanvasObject) {
+			diu, _ := di.(binding.Untyped).Get()
+			file := diu.(models.File)
+			o.(*widget.Label).SetText(file.FileName)
 		},
 	)
 
@@ -552,6 +542,8 @@ func handleDrop(uri string) {
 		fmt.Println("Error copying file contents:", err)
 		return
 	}
+
+	fmt.Println("File saved:", filepath.Base(uri)) // Print the file directory
 }
 
 // Function to open a file
