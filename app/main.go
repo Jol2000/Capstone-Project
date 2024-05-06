@@ -101,6 +101,7 @@ var itemsData models.Items
 var collectionData = binding.NewUntypedList()
 var currentItemID int
 var itemFileData = binding.NewUntypedList()
+var collectionsFilter []string
 
 func main() {
 
@@ -143,6 +144,10 @@ func main() {
 
 	createbtn := widget.NewButtonWithIcon("", theme.ContentAddIcon(), func() {
 		CreateItemForm(w)
+	})
+
+	filterbtn := widget.NewButtonWithIcon("", theme.ContentRedoIcon(), func() {
+		FilterCollectionsForm(w)
 	})
 	//Search bar
 	collectionSearchBar := widget.NewEntry()
@@ -368,7 +373,7 @@ func main() {
 	itemDataContainer := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
 	dataDisplayContainer := container.NewHSplit(collectionList, itemDataContainer)
 	dataDisplayContainer.Offset = 0.3
-	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar, editItemButton, collectionFilter, createbtn)
+	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar, editItemButton, collectionFilter, createbtn, filterbtn)
 	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
 
 	collectionList.OnSelected = func(id widget.ListItemID) {
@@ -756,6 +761,41 @@ func EditItemForm(window fyne.Window, itemID int) {
 			}
 		}
 	}, window)
+
+	form.Resize(fyne.NewSize(400, 300)) // Adjust the size of the form dialog
+	form.Show()
+
+}
+
+// FilterCollectionsForm creates a form to filter collections
+func FilterCollectionsForm(window fyne.Window) {
+	collections := itemsData.CollectionNames()
+
+	var formItems []*widget.FormItem
+	for _, collection := range collections {
+		collectionsCheck := widget.NewCheck(collection, nil)
+		formItems = append(formItems, widget.NewFormItem("", collectionsCheck))
+	}
+
+	form := dialog.NewForm("Filter Collections", "Filter", "Cancel", formItems,
+		func(submitted bool) {
+			if submitted {
+				var collectionsFiltered []string
+				for index, item := range formItems {
+					// Cast the widget in each form item to a *widget.Check
+					checkbox, ok := item.Widget.(*widget.Check)
+					if ok {
+						// Check if the checkbox is checked
+						if checkbox.Checked {
+							fmt.Printf("%s is selected\n", checkbox.Text)
+							collectionsFiltered = append(collectionsFiltered, collections[index])
+						}
+					}
+				}
+				fmt.Println(collectionsFiltered)
+				collectionsFilter = collectionsFiltered
+			}
+		}, window)
 
 	form.Resize(fyne.NewSize(400, 300)) // Adjust the size of the form dialog
 	form.Show()
