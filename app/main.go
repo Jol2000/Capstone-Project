@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"hello/models"
 	"image/color"
@@ -19,6 +20,7 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
@@ -661,4 +663,52 @@ func SetNameDescription(itemNameDescriptionContainer *fyne.Container, name strin
 		itemNameDescriptionContainer.Objects = newContainer.Objects
 		itemNameDescriptionContainer.Layout = newContainer.Layout
 	}
+}
+
+func UpdateData() {
+	resetData, _ := collectionData.Get()
+	resetData = resetData[:0]
+	collectionData.Set(resetData)
+	for _, t := range itemsData.Items {
+		collectionData.Append(t)
+	}
+}
+
+// CreateItemForm creates a form dialog for creating a new folder
+func CreateItemForm(window fyne.Window, itemData *models.Items, collectionList *widget.List) {
+	collectionEntry := widget.NewEntry()
+	collectionEntry.SetPlaceHolder("Collection")
+
+	nameEntry := widget.NewEntry()
+	nameEntry.SetPlaceHolder("Name")
+	//dateEntry.SetText("DD-MM-YYYY")
+
+	descriptionEntry := widget.NewMultiLineEntry()
+	descriptionEntry.SetPlaceHolder("Enter Description")
+	descriptionEntry.Resize(fyne.NewSize(300, 100)) // Set the initial size of the description entry
+
+	form := dialog.NewForm("Create Collection", "Create", "Cancel", []*widget.FormItem{
+		widget.NewFormItem("Collection:", collectionEntry),
+		widget.NewFormItem("Name:", nameEntry),
+		widget.NewFormItem("Description:", descriptionEntry),
+	}, func(submitted bool) {
+		if submitted {
+			name := nameEntry.Text
+			collection := collectionEntry.Text
+			description := descriptionEntry.Text
+			if name != "" && collection != "" && description != "" {
+				newItem := models.NewBasicItem(collection, name, description)
+				itemData.AddItem(newItem)
+				UpdateData()
+				// Update UI to reflect new folder
+				collectionList.Refresh()
+			} else {
+				dialog.ShowError(errors.New("Name, Date, and Description are required."), window)
+			}
+		}
+	}, window)
+
+	form.Resize(fyne.NewSize(400, 300)) // Adjust the size of the form dialog
+	form.Show()
+
 }

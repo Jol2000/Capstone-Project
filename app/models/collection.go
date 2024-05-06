@@ -46,6 +46,17 @@ func NewItem(collection string, name string, description string, labels []string
 	}
 }
 
+func NewBasicItem(collection string, name string, description string) Item {
+	return Item{
+		Collection:  collection,
+		Name:        name,
+		Description: "",
+		Files:       []File{},
+		Tags:        []string{},
+		Labels:      []string{},
+	}
+}
+
 func NewItemwithLabelTag(collection string, name string, description string, labels []string, tags []string) Item {
 	return Item{
 		Collection:  collection,
