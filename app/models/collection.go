@@ -35,13 +35,14 @@ func NewFile(name string, location string) File {
 	}
 }
 
-func NewItem(collection string, name string) Item {
+func NewItem(collection string, name string, description string, labels []string, tags []string, files []File) Item {
 	return Item{
 		Collection:  collection,
 		Name:        name,
 		Description: "",
-		Tags:        []string{},
-		Labels:      []string{},
+		Files:       files,
+		Tags:        tags,
+		Labels:      labels,
 	}
 }
 
@@ -50,6 +51,7 @@ func NewItemwithLabelTag(collection string, name string, description string, lab
 		Collection:  collection,
 		Name:        name,
 		Description: description,
+		Files:       []File{},
 		Tags:        tags,
 		Labels:      labels,
 	}

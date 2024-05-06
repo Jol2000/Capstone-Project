@@ -3,7 +3,7 @@
 		{
 			"collection": "Cars",
 			"name": "Polo GTI",
-			"description": "Volkswagon Polo GTI, A sporty version of the Polo model.",
+			"description": "",
 			"tags": [
 				"Fast",
 				"Red",
@@ -14,13 +14,18 @@
 				"Slow",
 				"Classic"
 			],
-			"files": null,
+			"files": [
+				{
+					"fileName": "Polo GTI Notes.txt",
+					"fileLocation": "Polo GTI Notes.txt"
+				}
+			],
 			"image": ""
 		},
 		{
 			"collection": "Cars",
 			"name": "X-Trail",
-			"description": "Nissan X-Trail",
+			"description": "",
 			"tags": [
 				"4WD",
 				"White",
@@ -33,7 +38,7 @@
 				"Classic",
 				"Ferrari"
 			],
-			"files": null,
+			"files": [],
 			"image": ""
 		}
 	]

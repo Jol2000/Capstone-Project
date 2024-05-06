@@ -3,7 +3,7 @@
 		{
 			"collection": "Movies",
 			"name": "Batman",
-			"description": "Batman vs Joker",
+			"description": "",
 			"tags": [
 				"Action",
 				"Fiction",
@@ -16,13 +16,13 @@
 				"Classic",
 				"Space"
 			],
-			"files": null,
+			"files": [],
 			"image": ""
 		},
 		{
 			"collection": "Movies",
 			"name": "Transformers",
-			"description": "Optimus prime and the gang",
+			"description": "",
 			"tags": [
 				"Fiction",
 				"2014",
@@ -35,7 +35,7 @@
 				"Classic",
 				"Space"
 			],
-			"files": null,
+			"files": [],
 			"image": ""
 		}
 	]

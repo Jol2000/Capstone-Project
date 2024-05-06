@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"fyne.io/fyne/v2"
@@ -32,6 +33,7 @@ import (
 // 	Genre string `json:"Genre"`
 // }
 
+// Reads Item Data from JSON
 func DecodeMovieData() (models.Items, error) {
 	var resultData models.Items
 	items, _ := ioutil.ReadDir("./data/collections")
@@ -60,7 +62,6 @@ func DecodeMovieData() (models.Items, error) {
 					fmt.Println("Load data failure: ", err)
 					return result, err
 				}
-				//fmt.Println(items)
 				resultData.Items = append(resultData.Items, items.Items...)
 			}
 		}
@@ -69,6 +70,7 @@ func DecodeMovieData() (models.Items, error) {
 	return resultData, nil
 }
 
+// Writes Items Data to JSON
 func EncodeMovieData(data models.Items) {
 	collections := data.CollectionNames()
 	for _, collection := range collections {
@@ -95,6 +97,7 @@ func EncodeMovieData(data models.Items) {
 var itemsData models.Items
 var collectionData = binding.NewUntypedList()
 var currentItemID int
+var itemFileData = binding.NewUntypedList()
 
 func main() {
 
@@ -199,13 +202,6 @@ func main() {
 	)
 
 	//File List
-	inputFileData := []models.File{}
-
-	itemFileData := binding.NewUntypedList()
-
-	for _, t := range inputFileData {
-		itemFileData.Append(t)
-	}
 
 	fileList := widget.NewListWithData(
 		itemFileData,
@@ -221,13 +217,19 @@ func main() {
 
 	// Set onItemSelected callback for list items
 	fileList.OnSelected = func(index int) {
-		fileName := getFileNames()[index]
-		openFile(fileName)
+		itemLabelsList.UnselectAll()
+		fileRaw, _ := itemFileData.GetValue(index)
+		if data, ok := fileRaw.(models.File); ok {
+			openFile(data.FileLocation)
+		}
 	}
 
 	// Create a container for the list
-	listContainer := container.NewVBox(
+	listContainer := container.NewBorder(
 		widget.NewLabel("Files:"),
+		nil,
+		nil,
+		nil,
 		fileList,
 	)
 	w.SetOnDropped(dropHandler)
@@ -293,6 +295,7 @@ func main() {
 	}
 
 	itemLabelsList.OnSelected = func(id widget.ListItemID) {
+		fileList.UnselectAll()
 		labelSelectedID = id
 		labelRemoveButton.Enable()
 	}
@@ -363,6 +366,8 @@ func main() {
 	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
 
 	collectionList.OnSelected = func(id widget.ListItemID) {
+		fileList.UnselectAll()
+		itemLabelsList.UnselectAll()
 		labelSelectedID = -1
 		rawData, _ := collectionData.GetValue(id)
 		currentItemID = id
@@ -379,11 +384,11 @@ func main() {
 				itemLabelData.Append(label)
 			}
 			// Tag Data
-			tagData, _ := itemTagData.Get()
-			tagData = tagData[:0]
-			itemTagData.Set(tagData)
-			for _, tag := range data.Tags {
-				itemTagData.Append(tag)
+			fileData, _ := itemFileData.Get()
+			fileData = fileData[:0]
+			itemFileData.Set(fileData)
+			for _, file := range data.Files {
+				itemFileData.Append(file)
 			}
 			SetNameDescription(itemNameDescriptionContainer, data.Name, data.Description, editing)
 		} else {
@@ -494,12 +499,13 @@ func SaveData() {
 
 	for _, data := range data {
 		if item, ok := data.(models.Item); ok {
-			savedData.AddItem(models.NewItemwithLabelTag(
+			savedData.AddItem(models.NewItem(
 				item.Collection,
 				item.Name,
 				item.Description,
 				item.Labels,
-				item.Tags))
+				item.Tags,
+				item.Files))
 		}
 	}
 
@@ -543,27 +549,50 @@ func handleDrop(uri string) {
 		return
 	}
 
+	// Update the data in the collection
+	newFile := models.NewFile("", filepath.Base(uri))
+	rawData, _ := collectionData.GetValue(currentItemID)
+	if data, ok := rawData.(models.Item); ok {
+		data.AddFile(newFile)
+		collectionData.SetValue(currentItemID, data)
+		fmt.Println(data.Files)
+		SaveData()
+	}
+	itemFileData.Append(newFile)
 	fmt.Println("File saved:", filepath.Base(uri)) // Print the file directory
 }
 
 // Function to open a file
 func openFile(fileName string) {
 	filePath := filepath.Join(".", "data", "files", fileName)
-	cmd := fmt.Sprintf("xdg-open %s", filePath) // On Linux, use xdg-open to open the file
-	err := exec.Command("sh", "-c", cmd).Run()
-	if err != nil {
-		fmt.Println("Error opening file:", err)
+
+	switch runtime.GOOS {
+	case "windows":
+		cmd := exec.Command("cmd", "/c", filePath)
+		err := cmd.Run()
+		if err != nil {
+			fmt.Println("Error opening file:", err)
+		}
+	case "linux":
+		cmd := exec.Command("xdg-open", filePath)
+		err := cmd.Run()
+		if err != nil {
+			fmt.Println("Error opening file:", err)
+		}
+	default:
+		fmt.Println("Unsupported operating system")
+		return
 	}
 }
 
-// dropHandler handles dropped files onto the window
 // dropHandler handles dropped files onto the window
 func dropHandler(pos fyne.Position, uris []fyne.URI) {
 	for _, uri := range uris {
 		handleDrop(uri.Path())
 	}
 	// Refresh the list after handling drops
-	//fileList.Refresh()
+	SaveData()
+	EncodeMovieData(itemsData)
 }
 
 func editNameDescription(itemNameDescriptionContainer *fyne.Container) {
@@ -582,9 +611,7 @@ func editNameDescription(itemNameDescriptionContainer *fyne.Container) {
 	newContainer := container.NewBorder(nameEntry, nil, nil, nil, descriptionEntry)
 
 	// Replace the content of the existing container with the new container
-	fmt.Println("Initial: ", itemNameDescriptionContainer.Objects[0])
 	itemNameDescriptionContainer.Objects = newContainer.Objects
-	fmt.Println("Updated: ", itemNameDescriptionContainer.Objects[0])
 	itemNameDescriptionContainer.Layout = newContainer.Layout
 
 	// Refresh the container to reflect the changes
@@ -599,7 +626,6 @@ func saveNameDescription(itemNameDescriptionContainer *fyne.Container, currentIt
 	rawData, _ := collectionData.GetValue(currentItemID)
 	if data, ok := rawData.(models.Item); ok {
 		data.Name = nameEntry.Text
-		fmt.Println(nameEntry.Text)
 		data.Description = descriptionEntry.Text
 		collectionData.SetValue(currentItemID, data)
 		SaveData()
