@@ -50,7 +50,7 @@ func NewBasicItem(collection string, name string, description string) Item {
 	return Item{
 		Collection:  collection,
 		Name:        name,
-		Description: "",
+		Description: description,
 		Files:       []File{},
 		Tags:        []string{},
 		Labels:      []string{},

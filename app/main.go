@@ -15,6 +15,7 @@ import (
 	"runtime"
 	"strings"
 
+	"fyne.io/fyne/theme"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
@@ -140,6 +141,9 @@ func main() {
 	addIcon := canvas.NewImageFromFile("../images/add_icon.png")
 	addIcon.FillMode = canvas.ImageFillOriginal
 
+	createbtn := widget.NewButtonWithIcon("", theme.ContentAddIcon(), func() {
+		CreateItemForm(w)
+	})
 	//Search bar
 	collectionSearchBar := widget.NewEntry()
 	// Collection filter
@@ -364,7 +368,7 @@ func main() {
 	itemDataContainer := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
 	dataDisplayContainer := container.NewHSplit(collectionList, itemDataContainer)
 	dataDisplayContainer.Offset = 0.3
-	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar, editItemButton, collectionFilter)
+	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar, editItemButton, collectionFilter, createbtn)
 	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
 
 	collectionList.OnSelected = func(id widget.ListItemID) {
@@ -674,14 +678,13 @@ func UpdateData() {
 	}
 }
 
-// CreateItemForm creates a form dialog for creating a new folder
-func CreateItemForm(window fyne.Window, itemData *models.Items, collectionList *widget.List) {
+// CreateItemForm creates a form dialog for creating a new item
+func CreateItemForm(window fyne.Window) {
 	collectionEntry := widget.NewEntry()
 	collectionEntry.SetPlaceHolder("Collection")
 
 	nameEntry := widget.NewEntry()
 	nameEntry.SetPlaceHolder("Name")
-	//dateEntry.SetText("DD-MM-YYYY")
 
 	descriptionEntry := widget.NewMultiLineEntry()
 	descriptionEntry.SetPlaceHolder("Enter Description")
@@ -698,10 +701,56 @@ func CreateItemForm(window fyne.Window, itemData *models.Items, collectionList *
 			description := descriptionEntry.Text
 			if name != "" && collection != "" && description != "" {
 				newItem := models.NewBasicItem(collection, name, description)
-				itemData.AddItem(newItem)
+				itemsData.AddItem(newItem)
 				UpdateData()
-				// Update UI to reflect new folder
-				collectionList.Refresh()
+				EncodeMovieData(itemsData)
+			} else {
+				dialog.ShowError(errors.New("Name, Date, and Description are required."), window)
+			}
+		}
+	}, window)
+
+	form.Resize(fyne.NewSize(400, 300)) // Adjust the size of the form dialog
+	form.Show()
+
+}
+
+// EditItemForm creates a form dialog for editing an item
+func EditItemForm(window fyne.Window, itemID int) {
+	var itemCollection string
+	var itemName string
+	var itemDescription string
+
+	rawData, _ := collectionData.GetValue(itemID)
+	if data, ok := rawData.(models.Item); ok {
+		itemCollection = data.Collection
+		itemName = data.Name
+		itemDescription = data.Description
+	}
+	collectionEntry := widget.NewEntry()
+	collectionEntry.SetPlaceHolder(itemCollection)
+
+	nameEntry := widget.NewEntry()
+	nameEntry.SetPlaceHolder(itemName)
+
+	descriptionEntry := widget.NewMultiLineEntry()
+	descriptionEntry.SetPlaceHolder(itemDescription)
+	descriptionEntry.Resize(fyne.NewSize(300, 100)) // Set the initial size of the description entry
+
+	form := dialog.NewForm("Create Collection", "Create", "Cancel", []*widget.FormItem{
+		widget.NewFormItem("Collection:", collectionEntry),
+		widget.NewFormItem("Name:", nameEntry),
+		widget.NewFormItem("Description:", descriptionEntry),
+	}, func(submitted bool) {
+		if submitted {
+			name := nameEntry.Text
+			collection := collectionEntry.Text
+			description := descriptionEntry.Text
+			if name != "" && collection != "" && description != "" {
+				newItem := models.NewBasicItem(collection, name, description)
+				itemsData.AddItem(newItem)
+				UpdateData()
+				EncodeMovieData(itemsData)
 			} else {
 				dialog.ShowError(errors.New("Name, Date, and Description are required."), window)
 			}
