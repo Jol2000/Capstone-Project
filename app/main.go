@@ -16,7 +16,6 @@ import (
 	"slices"
 	"strings"
 
-	"fyne.io/fyne/theme"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
@@ -24,6 +23,7 @@ import (
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -155,11 +155,35 @@ func main() {
 	uploadImgBtn := widget.NewButtonWithIcon("", theme.ContentAddIcon(), func() {
 		ImageUploadForm(w)
 	})
+
+	//Settings
+	settingbtn := widget.NewButtonWithIcon("", theme.SettingsIcon(), func() {
+		var themeOption string // Variable to store selected theme option
+
+		// Create a radio group for selecting theme
+		radio := widget.NewRadioGroup([]string{"Dark", "Light"}, func(selected string) {
+			themeOption = selected // Update themeOption with selected theme
+		})
+
+		// Create a form dialog with radio buttons
+		form := dialog.NewForm("Settings", "Ok", "Cancel", []*widget.FormItem{
+			widget.NewFormItem("Theme", radio), // Add radio group to the form
+		}, func(submitted bool) {
+			// Function to handle submission of form
+			if submitted && themeOption != "" { // Check if a theme option is selected
+				if themeOption == "Dark" {
+					a.Settings().SetTheme(theme.DarkTheme())
+				} else {
+					a.Settings().SetTheme(theme.LightTheme())
+				}
+			}
+		}, w)
+
+		form.Show() // Show the form dialog
+	})
+
 	//Search bar
 	collectionSearchBar := widget.NewEntry()
-	// Collection filter
-	collectionsList := []string{"1", "2", "3"}
-	collectionFilter := widget.NewSelectEntry(collectionsList)
 
 	// Item list binding
 	for _, t := range itemsData.Items {
@@ -408,7 +432,7 @@ func main() {
 	itemDataContainer := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
 	dataDisplayContainer := container.NewHSplit(collectionList, itemDataContainer)
 	dataDisplayContainer.Offset = 0.3
-	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar, editItemButton, collectionFilter, createbtn, filterbtn, uploadImgBtn)
+	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar, editItemButton, createbtn, filterbtn, uploadImgBtn, settingbtn)
 	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
 
 	collectionList.OnSelected = func(id widget.ListItemID) {
