@@ -104,6 +104,7 @@ var currentItemID int
 var itemFileData = binding.NewUntypedList()
 var collectionsFilter []string
 var editing = false
+var itemImagePlaceholder = canvas.NewImageFromFile("data/images/defualtImageIcon.jpg")
 
 func main() {
 
@@ -116,18 +117,6 @@ func main() {
 
 	a := app.New()
 	w := a.NewWindow("Treasure It Desktop")
-
-	// Top Content Bar
-	tiTitle := canvas.NewText("Treasure It", color.Black)
-	tiTitle.TextSize = 40
-	searchEntry := canvas.NewText("Home", color.Black)
-	searchEntry.TextSize = 30
-	homeButton := canvas.NewText("Collections", color.Black)
-	homeButton.TextSize = 30
-	collectionsButton := canvas.NewText("Search", color.Black)
-	collectionsButton.TextSize = 30
-	addItemButton := widget.NewLabel("+")
-	TopContent := container.New(layout.NewHBoxLayout(), tiTitle, layout.NewSpacer(), addItemButton, searchEntry, homeButton, collectionsButton)
 
 	// Collection List View
 	// Tool Bar
@@ -320,7 +309,7 @@ func main() {
 	itemNameDescriptionContainer := container.NewBorder(itemName, nil, nil, nil, itemDescription)
 	// Item image
 	//itemImage := canvas.NewImageFromFile()
-	itemImagePlaceholder := widget.NewLabel("Image Placeholder")
+
 	// Edit Item
 
 	// Label Add
@@ -422,6 +411,36 @@ func main() {
 		}
 	})
 
+	exitbtn := widget.NewButtonWithIcon("", theme.LogoutIcon(), func() {
+		a.Quit()
+	})
+
+	menubtn := widget.NewButtonWithIcon("", theme.MenuIcon(), func() {
+		// Toggle visibility of home, createbtn, searchbtn
+		if createbtn.Visible() {
+			//home.Hide()
+			collectionSearchBar.Hide()
+			editItemButton.Hide()
+			createbtn.Hide()
+			filterbtn.Hide()
+			settingbtn.Hide()
+			exitbtn.Hide()
+		} else {
+			//home.Hide()
+			collectionSearchBar.Show()
+			editItemButton.Show()
+			createbtn.Show()
+			filterbtn.Show()
+			settingbtn.Show()
+			exitbtn.Show()
+		}
+	})
+
+	// Top Content Bar
+	tiTitle := canvas.NewText("Treasure It", color.Black)
+	tiTitle.TextSize = 40
+	burgerMenu := container.NewHBox(editItemButton, createbtn, filterbtn, settingbtn, uploadImgBtn, menubtn)
+	TopContent := container.New(layout.NewHBoxLayout(), tiTitle, layout.NewSpacer(), burgerMenu)
 	// Formatting
 	nameDescriptionImageContainer := container.NewHSplit(itemNameDescriptionContainer, itemImagePlaceholder)
 	labelAddRemoveButtonContainer := container.NewHBox(labelAddButton, labelRemoveButton)
@@ -430,10 +449,10 @@ func main() {
 	_ = itemTagListWithEntry
 	labelTagListContainer := container.NewHSplit(itemLabelListWithEntry, listContainer)
 	itemDataContainer := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
-	dataDisplayContainer := container.NewHSplit(collectionList, itemDataContainer)
+	dataDisplayContainer := container.NewHSplit(container.NewBorder(collectionSearchBar, nil, nil, nil, collectionList), itemDataContainer)
 	dataDisplayContainer.Offset = 0.3
-	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar, editItemButton, createbtn, filterbtn, uploadImgBtn, settingbtn)
-	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
+	//TopContentContainer := container.NewVBox()
+	content := container.NewBorder(TopContent, nil, nil, nil, dataDisplayContainer)
 
 	collectionList.OnSelected = func(id widget.ListItemID) {
 		fileList.UnselectAll()
@@ -458,6 +477,12 @@ func main() {
 				itemFileData.Append(file)
 			}
 			SetNameDescription(itemNameDescriptionContainer, data.Name, data.Description, editing)
+			if data.Image == "" {
+				itemImagePlaceholder.File = "data/images/defualtImageIcon.jpg"
+			} else {
+				itemImagePlaceholder.File = data.Image
+			}
+			itemImagePlaceholder.Refresh()
 		} else {
 			fmt.Println("Data not found")
 		}
@@ -562,7 +587,8 @@ func SaveData() {
 				item.Description,
 				item.Labels,
 				item.Tags,
-				item.Files))
+				item.Files,
+				item.Image))
 		}
 	}
 
@@ -584,7 +610,7 @@ func getFileNames() []string {
 }
 
 // Function to handle dropped files
-func handleDrop(uri string) {
+func handleFileDrop(uri string) {
 	srcFile, err := os.Open(uri)
 	if err != nil {
 		fmt.Println("Error opening dropped file:", err)
@@ -619,6 +645,44 @@ func handleDrop(uri string) {
 	fmt.Println("File saved:", filepath.Base(uri)) // Print the file directory
 }
 
+// Function to handle image upload
+func handleImageDrop(uri string) {
+	srcFile, err := os.Open(uri)
+	if err != nil {
+		fmt.Println("Error opening dropped file:", err)
+		return
+	}
+	defer srcFile.Close()
+
+	dstPath := filepath.Join(".", "data", "images", filepath.Base(uri))
+	dstFile, err := os.Create(dstPath)
+	if err != nil {
+		fmt.Println("Error creating destination file:", err)
+		return
+	}
+	defer dstFile.Close()
+
+	_, err = io.Copy(dstFile, srcFile)
+	if err != nil {
+		fmt.Println("Error copying file contents:", err)
+		return
+	}
+
+	// Update the data in the collection
+	rawData, _ := collectionData.GetValue(currentItemID)
+	if data, ok := rawData.(models.Item); ok {
+		data.AddImagePath(dstPath)
+		collectionData.SetValue(currentItemID, data)
+		fmt.Println(data.Image)
+		SaveData()
+	}
+	itemImagePlaceholder.File = dstPath
+	itemImagePlaceholder.Refresh()
+	fmt.Println("Image saved:", dstPath) // Print the file directory
+	SaveData()
+	EncodeMovieData(itemsData)
+}
+
 // Function to open a file
 func openFile(fileName string) {
 	filePath := filepath.Join(".", "data", "files", fileName)
@@ -645,7 +709,7 @@ func openFile(fileName string) {
 // dropHandler handles dropped files onto the window
 func dropHandler(pos fyne.Position, uris []fyne.URI) {
 	for _, uri := range uris {
-		handleDrop(uri.Path())
+		handleFileDrop(uri.Path())
 	}
 	// Refresh the list after handling drops
 	SaveData()
@@ -863,11 +927,11 @@ func FilterCollectionsForm(window fyne.Window) {
 
 // ImageUploadForm creates a form to upload an image for an item
 func ImageUploadForm(window fyne.Window) {
-	form := dialog.NewFileSave(
-		func(file fyne.URIWriteCloser, err error) {
-			fmt.Println(file)
+	form := dialog.NewFileOpen(
+		func(file fyne.URIReadCloser, err error) {
+			handleImageDrop(file.URI().Path())
 		}, window)
 
-	form.Resize(fyne.NewSize(400, 300)) // Adjust the size of the form dialog
+	form.Resize(fyne.NewSize(500, 500)) // Adjust the size of the form dialog
 	form.Show()
 }

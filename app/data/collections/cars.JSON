@@ -2,26 +2,6 @@
 	"items": [
 		{
 			"collection": "Cars",
-			"name": "Name",
-			"description": "",
-			"tags": [
-				"Fast",
-				"Red",
-				"Modern",
-				"Volkswagon"
-			],
-			"labels": [
-				"Slow",
-				"Green",
-				"Classic",
-				"Ferrari",
-				"Price: $48,000"
-			],
-			"files": [],
-			"image": ""
-		},
-		{
-			"collection": "Cars",
 			"name": "X-Trail",
 			"description": "",
 			"tags": [
@@ -34,29 +14,26 @@
 				"Slow",
 				"Green",
 				"Classic",
-				"Ferrari",
-				"Price: $48,000"
+				"Price: $48,000",
+				"4WD"
 			],
 			"files": null,
-			"image": ""
-		},
-		{
-			"collection": "Cars",
-			"name": "Ferrari",
-			"description": "",
-			"tags": [],
-			"labels": [],
-			"files": [],
-			"image": ""
+			"image": "data\\images\\xtrailimage.jpg"
 		},
 		{
 			"collection": "Cars",
 			"name": "Subaru Forester",
 			"description": "",
 			"tags": [],
-			"labels": [],
+			"labels": [
+				"4WD",
+				"Hybrid",
+				"Old",
+				"Power Steering",
+				""
+			],
 			"files": [],
-			"image": ""
+			"image": "data\\images\\subaru-forester-update-2-l86r.jpg"
 		}
 	]
 }

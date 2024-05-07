@@ -35,7 +35,7 @@ func NewFile(name string, location string) File {
 	}
 }
 
-func NewItem(collection string, name string, description string, labels []string, tags []string, files []File) Item {
+func NewItem(collection string, name string, description string, labels []string, tags []string, files []File, image string) Item {
 	return Item{
 		Collection:  collection,
 		Name:        name,
@@ -43,6 +43,7 @@ func NewItem(collection string, name string, description string, labels []string
 		Files:       files,
 		Tags:        tags,
 		Labels:      labels,
+		Image:       image,
 	}
 }
 
@@ -74,6 +75,10 @@ func (item *Item) AddTag(tag string) {
 
 func (item *Item) AddFile(file File) {
 	item.Files = append(item.Files, file)
+}
+
+func (item *Item) AddImagePath(imagePath string) {
+	item.Image = imagePath
 }
 
 func (item *Item) RemoveFileID(fileID int) {
@@ -109,10 +114,7 @@ func (t *Items) AddItem(itemInput Item) {
 		}
 	}
 	if !contains {
-		fmt.Println("Length1: ", len(t.Items))
 		t.Items = append(t.Items, itemInput)
-		fmt.Println("Length2: ", len(t.Items))
-		fmt.Println("Added Item: ", itemInput.Name)
 	}
 }
 

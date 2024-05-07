@@ -17,7 +17,7 @@
 				"Ferrari"
 			],
 			"files": null,
-			"image": ""
+			"image": "data\\images\\Batman.jpg"
 		},
 		{
 			"collection": "Movies",
@@ -36,7 +36,7 @@
 				"Space"
 			],
 			"files": null,
-			"image": ""
+			"image": "data\\images\\transformers.jpg"
 		},
 		{
 			"collection": "Movies",
@@ -44,8 +44,17 @@
 			"description": "",
 			"tags": [],
 			"labels": [],
-			"files": [],
-			"image": ""
+			"files": [
+				{
+					"fileName": "Avatar (2009) - IMDb.html",
+					"fileLocation": "Avatar (2009) - IMDb.html"
+				},
+				{
+					"fileName": "Avatar (2009) - IMDb.mhtml",
+					"fileLocation": "Avatar (2009) - IMDb.mhtml"
+				}
+			],
+			"image": "data\\images\\avatar.jpg"
 		}
 	]
 }
