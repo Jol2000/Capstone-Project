@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 
 	"fyne.io/fyne/theme"
@@ -102,6 +103,7 @@ var collectionData = binding.NewUntypedList()
 var currentItemID int
 var itemFileData = binding.NewUntypedList()
 var collectionsFilter []string
+var editing = false
 
 func main() {
 
@@ -109,8 +111,8 @@ func main() {
 	EncodeMovieData(dataTest)
 	itemsData = dataTest
 
-	//var currentItem models.Item
 	labelSelectedID := -1
+	fileSelectedID := -1
 
 	a := app.New()
 	w := a.NewWindow("Treasure It Desktop")
@@ -148,6 +150,10 @@ func main() {
 
 	filterbtn := widget.NewButtonWithIcon("", theme.ContentRedoIcon(), func() {
 		FilterCollectionsForm(w)
+	})
+
+	uploadImgBtn := widget.NewButtonWithIcon("", theme.ContentAddIcon(), func() {
+		ImageUploadForm(w)
 	})
 	//Search bar
 	collectionSearchBar := widget.NewEntry()
@@ -228,17 +234,43 @@ func main() {
 
 	// Set onItemSelected callback for list items
 	fileList.OnSelected = func(index int) {
-		itemLabelsList.UnselectAll()
-		fileRaw, _ := itemFileData.GetValue(index)
-		if data, ok := fileRaw.(models.File); ok {
-			openFile(data.FileLocation)
+		if !editing {
+			itemLabelsList.UnselectAll()
+			fileRaw, _ := itemFileData.GetValue(index)
+			if data, ok := fileRaw.(models.File); ok {
+				openFile(data.FileLocation)
+			}
+		} else {
+			fileSelectedID = index
 		}
 	}
+
+	fileRemoveButton := widget.NewButtonWithIcon("", theme.ContentRemoveIcon(), func() {
+		if fileSelectedID != -1 {
+			rawData, _ := collectionData.GetValue(currentItemID)
+			if data, ok := rawData.(models.Item); ok {
+				data.RemoveFileID(fileSelectedID)
+				resetData, _ := itemFileData.Get()
+				resetData = resetData[:0]
+				itemFileData.Set(resetData)
+				for _, t := range data.Files {
+					itemFileData.Append(t)
+				}
+				collectionData.SetValue(currentItemID, data)
+				itemsData.UpdateItem(data)
+				EncodeMovieData(itemsData)
+				fileList.Refresh()
+			}
+		} else {
+			fmt.Println("Please select a file")
+		}
+	})
+	fileRemoveButton.Hide()
 
 	// Create a container for the list
 	listContainer := container.NewBorder(
 		widget.NewLabel("Files:"),
-		nil,
+		fileRemoveButton,
 		nil,
 		nil,
 		fileList,
@@ -269,7 +301,7 @@ func main() {
 
 	// Label Add
 	labelEntry := widget.NewEntry()
-	labelAddButton := widget.NewButton("  +  ", func() {
+	labelAddButton := widget.NewButtonWithIcon("", theme.ContentAddIcon(), func() {
 		rawData, _ := collectionData.GetValue(currentItemID)
 		if data, ok := rawData.(models.Item); ok {
 			data.AddLabel(labelEntry.Text)
@@ -282,7 +314,7 @@ func main() {
 		}
 	})
 
-	labelRemoveButton := widget.NewButton("  -  ", func() {
+	labelRemoveButton := widget.NewButtonWithIcon("", theme.ContentRemoveIcon(), func() {
 		if labelSelectedID != -1 {
 			rawData, _ := collectionData.GetValue(currentItemID)
 			if data, ok := rawData.(models.Item); ok {
@@ -341,7 +373,7 @@ func main() {
 	}
 
 	// Edit button
-	editing := false
+
 	var editItemButton *widget.Button
 	editItemButton = widget.NewButton("Edit", func() {
 		if !editing {
@@ -349,7 +381,8 @@ func main() {
 			labelEntry.Show()
 			labelAddButton.Show()
 			labelRemoveButton.Show()
-			//collectionList.Hide()
+			collectionList.FocusLost()
+			fileRemoveButton.Show()
 			editNameDescription(itemNameDescriptionContainer)
 			editItemButton.SetText("Save")
 		} else {
@@ -357,6 +390,8 @@ func main() {
 			labelEntry.Hide()
 			labelAddButton.Hide()
 			labelRemoveButton.Hide()
+			fileRemoveButton.Hide()
+			collectionList.FocusGained()
 			saveNameDescription(itemNameDescriptionContainer, currentItemID)
 			EncodeMovieData(itemsData)
 			editItemButton.SetText("Edit")
@@ -373,7 +408,7 @@ func main() {
 	itemDataContainer := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
 	dataDisplayContainer := container.NewHSplit(collectionList, itemDataContainer)
 	dataDisplayContainer.Offset = 0.3
-	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar, editItemButton, collectionFilter, createbtn, filterbtn)
+	TopContentContainer := container.NewVBox(TopContent, collectionSearchBar, editItemButton, collectionFilter, createbtn, filterbtn, uploadImgBtn)
 	content := container.NewBorder(TopContentContainer, nil, nil, nil, dataDisplayContainer)
 
 	collectionList.OnSelected = func(id widget.ListItemID) {
@@ -384,9 +419,6 @@ func main() {
 		currentItemID = id
 
 		if data, ok := rawData.(models.Item); ok {
-			// Set current Item
-			//currentItem = data
-
 			// Label Data
 			labelData, _ := itemLabelData.Get()
 			labelData = labelData[:0]
@@ -417,7 +449,9 @@ func main() {
 			resetData = resetData[:0]
 			collectionData.Set(resetData)
 			for _, t := range itemsData.Items {
-				collectionData.Append(t)
+				if slices.Contains(collectionsFilter, t.Collection) {
+					collectionData.Append(t)
+				}
 			}
 			return
 		}
@@ -432,6 +466,9 @@ func main() {
 		//addedItems = append(addedItems, "")
 
 		for _, item := range itemsData.Items {
+			if !slices.Contains(collectionsFilter, item.Collection) {
+				continue
+			}
 			for _, searchSplit := range searchInputs {
 				searchSplit = strings.Trim(searchSplit, " ")
 				if searchSplit == "" {
@@ -466,21 +503,6 @@ func main() {
 				// Label search
 				for _, label := range item.Labels {
 					if strings.Contains(label, searchSplit) {
-						used := false
-						for _, itemUsed := range addedItems {
-							if strings.Contains(itemUsed, item.Name) {
-								used = true
-							}
-						}
-						if !used {
-							collectionData.Append(item)
-							addedItems = append(addedItems, item.Name)
-						}
-					}
-				}
-				// Tag search
-				for _, tag := range item.Tags {
-					if strings.Contains(tag, searchSplit) {
 						used := false
 						for _, itemUsed := range addedItems {
 							if strings.Contains(itemUsed, item.Name) {
@@ -764,7 +786,17 @@ func EditItemForm(window fyne.Window, itemID int) {
 
 	form.Resize(fyne.NewSize(400, 300)) // Adjust the size of the form dialog
 	form.Show()
+}
 
+func FilterCollectionUpdate() {
+	resetData, _ := collectionData.Get()
+	resetData = resetData[:0]
+	collectionData.Set(resetData)
+	for _, t := range itemsData.Items {
+		if slices.Contains(collectionsFilter, t.Collection) {
+			collectionData.Append(t)
+		}
+	}
 }
 
 // FilterCollectionsForm creates a form to filter collections
@@ -774,6 +806,9 @@ func FilterCollectionsForm(window fyne.Window) {
 	var formItems []*widget.FormItem
 	for _, collection := range collections {
 		collectionsCheck := widget.NewCheck(collection, nil)
+		if slices.Contains(collectionsFilter, collection) {
+			collectionsCheck.SetChecked(true)
+		}
 		formItems = append(formItems, widget.NewFormItem("", collectionsCheck))
 	}
 
@@ -794,10 +829,21 @@ func FilterCollectionsForm(window fyne.Window) {
 				}
 				fmt.Println(collectionsFiltered)
 				collectionsFilter = collectionsFiltered
+				FilterCollectionUpdate()
 			}
 		}, window)
 
 	form.Resize(fyne.NewSize(400, 300)) // Adjust the size of the form dialog
 	form.Show()
+}
 
+// ImageUploadForm creates a form to upload an image for an item
+func ImageUploadForm(window fyne.Window) {
+	form := dialog.NewFileSave(
+		func(file fyne.URIWriteCloser, err error) {
+			fmt.Println(file)
+		}, window)
+
+	form.Resize(fyne.NewSize(400, 300)) // Adjust the size of the form dialog
+	form.Show()
 }

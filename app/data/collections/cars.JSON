@@ -14,9 +14,10 @@
 				"Slow",
 				"Green",
 				"Classic",
-				"Ferrari"
+				"Ferrari",
+				"Price: $48,000"
 			],
-			"files": null,
+			"files": [],
 			"image": ""
 		},
 		{
@@ -33,7 +34,8 @@
 				"Slow",
 				"Green",
 				"Classic",
-				"Ferrari"
+				"Ferrari",
+				"Price: $48,000"
 			],
 			"files": null,
 			"image": ""
@@ -41,6 +43,15 @@
 		{
 			"collection": "Cars",
 			"name": "Ferrari",
+			"description": "",
+			"tags": [],
+			"labels": [],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Cars",
+			"name": "Subaru Forester",
 			"description": "",
 			"tags": [],
 			"labels": [],

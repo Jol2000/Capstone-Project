@@ -76,6 +76,14 @@ func (item *Item) AddFile(file File) {
 	item.Files = append(item.Files, file)
 }
 
+func (item *Item) RemoveFileID(fileID int) {
+	// Check if labelID is within the range of Labels slice
+	if fileID >= 0 && fileID < len(item.Files) {
+		// Remove the label at labelID position
+		item.Files = append(item.Files[:fileID], item.Files[fileID+1:]...)
+	}
+}
+
 func (item *Item) AddLabel(label string) {
 	item.Labels = append(item.Labels, label)
 	fmt.Println("Updated Labels: ", item.Labels)
