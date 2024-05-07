@@ -107,7 +107,7 @@ var editing = false
 var itemImagePlaceholder = canvas.NewImageFromFile("data/images/defualtImageIcon.jpg")
 
 func main() {
-
+	itemImagePlaceholder.FillMode = canvas.ImageFillContain
 	dataTest, _ := DecodeMovieData()
 	EncodeMovieData(dataTest)
 	itemsData = dataTest
@@ -437,8 +437,9 @@ func main() {
 	})
 
 	// Top Content Bar
-	tiTitle := canvas.NewText("Treasure It", color.Black)
-	tiTitle.TextSize = 40
+	tiTitle := canvas.NewText("Treasure It", theme.ForegroundColor())
+	tiTitle.TextSize = 24
+	tiTitle.TextStyle = fyne.TextStyle{Bold: true}
 	burgerMenu := container.NewHBox(editItemButton, createbtn, filterbtn, settingbtn, uploadImgBtn, menubtn)
 	TopContent := container.New(layout.NewHBoxLayout(), tiTitle, layout.NewSpacer(), burgerMenu)
 	// Formatting
