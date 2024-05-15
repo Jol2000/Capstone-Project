@@ -173,6 +173,9 @@ func main() {
 
 	//Search bar
 	collectionSearchBar := widget.NewEntry()
+	searchBarHelpBtn := widget.NewButtonWithIcon("", theme.HelpIcon(), func() {
+		dialog.ShowInformation("Search Bar Help", "The search bar filters the currently selected collection(s), use a comma (,) between multiple search criterea options.", w)
+	})
 
 	// Item list binding
 	for _, t := range itemsData.Items {
@@ -306,6 +309,7 @@ func main() {
 	// Item Name and Description
 	itemName := widget.NewLabel("Name")
 	itemDescription := widget.NewLabel("Description")
+	itemDescription.Wrapping = fyne.TextWrapWord
 	itemNameDescriptionContainer := container.NewBorder(itemName, nil, nil, nil, itemDescription)
 	// Item image
 	//itemImage := canvas.NewImageFromFile()
@@ -450,7 +454,7 @@ func main() {
 	_ = itemTagListWithEntry
 	labelTagListContainer := container.NewHSplit(itemLabelListWithEntry, listContainer)
 	itemDataContainer := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
-	dataDisplayContainer := container.NewHSplit(container.NewBorder(collectionSearchBar, nil, nil, nil, collectionList), itemDataContainer)
+	dataDisplayContainer := container.NewHSplit(container.NewBorder(container.NewBorder(nil, nil, nil, searchBarHelpBtn, collectionSearchBar), nil, nil, nil, collectionList), itemDataContainer)
 	dataDisplayContainer.Offset = 0.3
 	//TopContentContainer := container.NewVBox()
 	content := container.NewBorder(TopContent, nil, nil, nil, dataDisplayContainer)
@@ -568,6 +572,7 @@ func main() {
 		}
 	}
 
+	collectionList.Select(0)
 	// Setting Content to window
 	w.SetContent(content)
 	w.Resize(fyne.NewSize(1200, 800))
@@ -767,8 +772,10 @@ func saveNameDescription(itemNameDescriptionContainer *fyne.Container, currentIt
 func SetNameDescription(itemNameDescriptionContainer *fyne.Container, name string, description string, editing bool) {
 	if editing {
 		nameEntry := widget.NewEntry()
+		nameEntry.Wrapping = fyne.TextWrapWord
 		nameEntry.SetText(name)
 		descriptionEntry := widget.NewEntry()
+		descriptionEntry.Wrapping = fyne.TextWrapWord
 		descriptionEntry.SetText(description)
 
 		newContainer := container.NewBorder(nameEntry, nil, nil, nil, descriptionEntry)
@@ -776,7 +783,9 @@ func SetNameDescription(itemNameDescriptionContainer *fyne.Container, name strin
 		itemNameDescriptionContainer.Layout = newContainer.Layout
 	} else {
 		nameLabel := widget.NewLabel(name)
+		nameLabel.Wrapping = fyne.TextWrapWord
 		descriptionLabel := widget.NewLabel(description)
+		descriptionLabel.Wrapping = fyne.TextWrapWord
 
 		newContainer := container.NewBorder(nameLabel, nil, nil, nil, descriptionLabel)
 		itemNameDescriptionContainer.Objects = newContainer.Objects
