@@ -1,0 +1,26 @@
+{
+	"items": [
+		{
+			"collection": "Recipes",
+			"name": "Lemon Weet-Bix slice",
+			"description": "",
+			"tags": [],
+			"labels": [
+				"Dairy"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Recipes",
+			"name": "Caramilk custard slice",
+			"description": "",
+			"tags": [],
+			"labels": [
+				"Dairy"
+			],
+			"files": [],
+			"image": ""
+		}
+	]
+}

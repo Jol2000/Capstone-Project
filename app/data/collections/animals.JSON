@@ -28,7 +28,12 @@
 			"name": "Horse",
 			"description": "",
 			"tags": [],
-			"labels": [],
+			"labels": [
+				"Native",
+				"Tail",
+				"Herbivore",
+				"Fast"
+			],
 			"files": [],
 			"image": "data\\images\\images.jpg"
 		}

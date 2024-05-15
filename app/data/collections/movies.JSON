@@ -2,25 +2,6 @@
 	"items": [
 		{
 			"collection": "Movies",
-			"name": "Batman",
-			"description": "",
-			"tags": [
-				"Action",
-				"Fiction",
-				"2007",
-				"Dark"
-			],
-			"labels": [
-				"Slow",
-				"Green",
-				"Classic",
-				"Ferrari"
-			],
-			"files": null,
-			"image": "data\\images\\Batman.jpg"
-		},
-		{
-			"collection": "Movies",
 			"name": "Transformers",
 			"description": "",
 			"tags": [
@@ -37,24 +18,6 @@
 			],
 			"files": null,
 			"image": "data\\images\\transformers.jpg"
-		},
-		{
-			"collection": "Movies",
-			"name": "Avatar",
-			"description": "",
-			"tags": [],
-			"labels": [],
-			"files": [
-				{
-					"fileName": "Avatar (2009) - IMDb.html",
-					"fileLocation": "Avatar (2009) - IMDb.html"
-				},
-				{
-					"fileName": "Avatar (2009) - IMDb.mhtml",
-					"fileLocation": "Avatar (2009) - IMDb.mhtml"
-				}
-			],
-			"image": "data\\images\\avatar.jpg"
 		}
 	]
 }

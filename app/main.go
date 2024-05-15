@@ -495,14 +495,12 @@ func main() {
 
 	collectionSearchBar.OnChanged = func(searchInput string) {
 		if searchInput == "" {
-			resetData, _ := collectionData.Get()
-			resetData = resetData[:0]
-			collectionData.Set(resetData)
+			dataTest, _ := DecodeMovieData()
+			itemsData = dataTest
 			for _, t := range itemsData.Items {
-				if slices.Contains(collectionsFilter, t.Collection) {
-					collectionData.Append(t)
-				}
+				collectionData.Append(t)
 			}
+			FilterCollectionUpdate()
 			return
 		}
 		searchData, _ := collectionData.Get()
@@ -517,6 +515,7 @@ func main() {
 
 		for _, item := range itemsData.Items {
 			if !slices.Contains(collectionsFilter, item.Collection) {
+				fmt.Println("Filtered")
 				continue
 			}
 			for _, searchSplit := range searchInputs {

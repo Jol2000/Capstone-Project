@@ -17,23 +17,13 @@
 				"Price: $48,000",
 				"4WD"
 			],
-			"files": null,
-			"image": "data\\images\\xtrailimage.jpg"
-		},
-		{
-			"collection": "Cars",
-			"name": "Subaru Forester",
-			"description": "",
-			"tags": [],
-			"labels": [
-				"4WD",
-				"Hybrid",
-				"Old",
-				"Power Steering",
-				""
+			"files": [
+				{
+					"fileName": "PoloGTINotes.txt",
+					"fileLocation": "PoloGTINotes.txt"
+				}
 			],
-			"files": [],
-			"image": "data\\images\\subaru-forester-update-2-l86r.jpg"
+			"image": "data\\images\\xtrailimage.jpg"
 		}
 	]
 }
