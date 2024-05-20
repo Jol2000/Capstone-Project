@@ -105,6 +105,7 @@ var collectionData = binding.NewUntypedList()
 var currentItemID int
 var itemFileData = binding.NewUntypedList()
 var collectionsFilter []string
+var viewsFilter []string
 var editing = false
 var itemImagePlaceholder = canvas.NewImageFromFile("data/images/defualtImageIcon.jpg")
 
@@ -216,26 +217,6 @@ func main() {
 		},
 	)
 
-	// Tag List
-	// Item Tags
-	inputTagData := []string{}
-
-	itemTagData := binding.NewStringList()
-
-	for _, t := range inputTagData {
-		itemTagData.Append(t)
-	}
-
-	itemTagsList := widget.NewListWithData(
-		itemTagData,
-		func() fyne.CanvasObject {
-			return widget.NewLabel("")
-		},
-		func(di binding.DataItem, o fyne.CanvasObject) {
-			o.(*widget.Label).Bind(di.(binding.String))
-		},
-	)
-
 	//File List
 
 	fileList := widget.NewListWithData(
@@ -316,7 +297,7 @@ func main() {
 	// Item image
 	//itemImage := canvas.NewImageFromFile()
 
-	// Edit Item
+	//
 
 	// Label Add
 	labelEntry := widget.NewEntry()
@@ -368,28 +349,17 @@ func main() {
 	labelRemoveButton.Hide()
 	labelRemoveButton.Disable()
 
-	// Tag Add
-	tagEntry := widget.NewEntry()
-	tagAddButton := widget.NewButton("  +  ", func() {
-		rawData, _ := collectionData.GetValue(currentItemID)
-		if data, ok := rawData.(models.Item); ok {
-			data.AddLabel(tagEntry.Text)
-			itemTagData.Append(tagEntry.Text)
-			collectionData.SetValue(currentItemID, data)
-			itemsData.UpdateItem(data)
-			tagEntry.Text = ""
-			EncodeMovieData(itemsData)
-			tagEntry.Refresh()
-		}
-	})
-	tagAddButton.Disable()
-	tagEntry.OnChanged = func(input string) {
-		tagAddButton.Disable()
+	// Data View Formating
+	nameDescriptionImageContainer := container.NewHSplit(itemNameDescriptionContainer, itemImagePlaceholder)
+	labelAddRemoveButtonContainer := container.NewHBox(labelAddButton, labelRemoveButton)
+	itemLabelListWithEntry := container.NewBorder(nil, container.NewBorder(nil, nil, nil, labelAddRemoveButtonContainer, labelEntry), nil, nil, itemLabelsList)
+	labelTagListContainer := container.NewHSplit(itemLabelListWithEntry, listContainer)
+	itemDataContainerSplit := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
+	itemDataContainer := container.NewBorder(nil, nil, nil, nil, itemDataContainerSplit)
 
-		if len(input) >= 3 {
-			tagAddButton.Enable()
-		}
-	}
+	viewEditBtn := widget.NewButtonWithIcon("", theme.VisibilityIcon(), func() {
+		FilterDataViewForm(w, itemNameDescriptionContainer, itemImagePlaceholder, itemLabelListWithEntry, listContainer, itemDataContainer)
+	})
 
 	// Edit button
 	var editItemButton *widget.Button
@@ -445,16 +415,10 @@ func main() {
 	tiTitle := canvas.NewText("Treasure It", theme.ForegroundColor())
 	tiTitle.TextSize = 24
 	tiTitle.TextStyle = fyne.TextStyle{Bold: true}
-	burgerMenu := container.NewHBox(editItemButton, createbtn, filterbtn, settingbtn, uploadImgBtn, menubtn)
+	burgerMenu := container.NewHBox(editItemButton, createbtn, filterbtn, settingbtn, uploadImgBtn, viewEditBtn, menubtn)
 	TopContent := container.New(layout.NewHBoxLayout(), tiTitle, layout.NewSpacer(), burgerMenu)
 	// Formatting
-	nameDescriptionImageContainer := container.NewHSplit(itemNameDescriptionContainer, itemImagePlaceholder)
-	labelAddRemoveButtonContainer := container.NewHBox(labelAddButton, labelRemoveButton)
-	itemLabelListWithEntry := container.NewBorder(nil, container.NewBorder(nil, nil, nil, labelAddRemoveButtonContainer, labelEntry), nil, nil, itemLabelsList)
-	itemTagListWithEntry := container.NewBorder(nil, container.NewBorder(nil, nil, nil, tagAddButton, tagEntry), nil, nil, itemTagsList)
-	_ = itemTagListWithEntry
-	labelTagListContainer := container.NewHSplit(itemLabelListWithEntry, listContainer)
-	itemDataContainer := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
+
 	dataDisplayContainer := container.NewHSplit(container.NewBorder(container.NewBorder(nil, nil, nil, searchBarHelpBtn, collectionSearchBar), nil, nil, nil, collectionList), itemDataContainer)
 	dataDisplayContainer.Offset = 0.3
 	//TopContentContainer := container.NewVBox()
@@ -926,6 +890,55 @@ func FilterCollectionUpdate() {
 	}
 }
 
+func FilterViewUpdate(nameDescription *fyne.Container, image *canvas.Image, labelList *fyne.Container, fileList *fyne.Container, dataDisplayContainer *fyne.Container) {
+	topDataSplit := container.NewHSplit(nameDescription, image)
+	topData := container.NewBorder(nil, nil, nil, nil, topDataSplit)
+	bottomDataSplit := container.NewHSplit(labelList, fileList)
+	bottomData := container.NewBorder(nil, nil, nil, nil, bottomDataSplit)
+	topDataShow := true
+	bottomDataShow := true
+
+	if !slices.Contains(viewsFilter, "Name/Description") && !slices.Contains(viewsFilter, "Image") {
+		topDataShow = false
+	} else if slices.Contains(viewsFilter, "Name/Description") && slices.Contains(viewsFilter, "Image") {
+		topData.Show()
+	} else if slices.Contains(viewsFilter, "Name/Description") {
+		topData = nameDescription
+		topData.Show()
+	} else {
+		topData = container.NewBorder(nil, nil, nil, nil, image)
+	}
+
+	if !slices.Contains(viewsFilter, "Labels") && !slices.Contains(viewsFilter, "Files") {
+		bottomDataShow = false
+	} else if slices.Contains(viewsFilter, "Labels") && slices.Contains(viewsFilter, "Files") {
+		topData.Show()
+	} else if slices.Contains(viewsFilter, "Labels") {
+		bottomData = labelList
+	} else {
+		bottomData = fileList
+	}
+
+	if topDataShow && bottomDataShow {
+		dataDisplaySplit := container.NewVSplit(topData, bottomData)
+		dataDisplayContainerNew := container.NewBorder(nil, nil, nil, nil, dataDisplaySplit)
+		dataDisplayContainer.Layout = dataDisplayContainerNew.Layout
+		dataDisplayContainer.Objects = dataDisplayContainerNew.Objects
+	} else if topDataShow {
+		dataDisplayContainerNew := container.NewBorder(nil, nil, nil, nil, topData)
+		dataDisplayContainer.Layout = dataDisplayContainerNew.Layout
+		dataDisplayContainer.Objects = dataDisplayContainerNew.Objects
+	} else if bottomDataShow {
+		dataDisplayContainerNew := container.NewBorder(nil, nil, nil, nil, bottomData)
+		dataDisplayContainer.Layout = dataDisplayContainerNew.Layout
+		dataDisplayContainer.Objects = dataDisplayContainerNew.Objects
+	} else {
+		dataDisplayContainerNew := container.NewBorder(nil, nil, nil, nil)
+		dataDisplayContainer.Layout = dataDisplayContainerNew.Layout
+		dataDisplayContainer.Objects = dataDisplayContainerNew.Objects
+	}
+}
+
 // FilterCollectionsForm creates a form to filter collections
 func FilterCollectionsForm(window fyne.Window) {
 	collections := itemsData.CollectionNames()
@@ -957,6 +970,44 @@ func FilterCollectionsForm(window fyne.Window) {
 				fmt.Println(collectionsFiltered)
 				collectionsFilter = collectionsFiltered
 				FilterCollectionUpdate()
+			}
+		}, window)
+
+	form.Resize(fyne.NewSize(400, 300)) // Adjust the size of the form dialog
+	form.Show()
+}
+
+// FilterCollectionsForm creates a form to filter collections
+func FilterDataViewForm(window fyne.Window, nameDescription *fyne.Container, image *canvas.Image, labelList *fyne.Container, fileList *fyne.Container, dataDisplayContainer *fyne.Container) {
+	views := []string{"Name/Description", "Image", "Labels", "Files"}
+
+	var formItems []*widget.FormItem
+	for _, view := range views {
+		viewsCheck := widget.NewCheck(view, nil)
+		if slices.Contains(viewsFilter, view) {
+			viewsCheck.SetChecked(true)
+		}
+		formItems = append(formItems, widget.NewFormItem("", viewsCheck))
+	}
+
+	form := dialog.NewForm("Edit Views", "Confirm", "Cancel", formItems,
+		func(submitted bool) {
+			if submitted {
+				var viewsFiltered []string
+				for index, item := range formItems {
+					// Cast the widget in each form item to a *widget.Check
+					checkbox, ok := item.Widget.(*widget.Check)
+					if ok {
+						// Check if the checkbox is checked
+						if checkbox.Checked {
+							fmt.Printf("%s is selected\n", checkbox.Text)
+							viewsFiltered = append(viewsFiltered, views[index])
+						}
+					}
+				}
+				fmt.Println(viewsFiltered)
+				viewsFilter = viewsFiltered
+				FilterViewUpdate(nameDescription, image, labelList, fileList, dataDisplayContainer)
 			}
 		}, window)
 
