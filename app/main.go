@@ -76,6 +76,7 @@ func DecodeMovieData() (models.Items, error) {
 
 // Writes Items Data to JSON
 func EncodeMovieData(data models.Items) {
+	fmt.Println("Encoding Data to JSON...")
 	collections := data.CollectionNames()
 	for _, collection := range collections {
 		file, errs := os.Create("data/collections/" + strings.ToLower(collection) + ".JSON")
@@ -96,6 +97,7 @@ func EncodeMovieData(data models.Items) {
 			return
 		}
 	}
+	fmt.Println("Data Encoded to JSON.")
 }
 
 var itemsData models.Items
@@ -390,7 +392,6 @@ func main() {
 	}
 
 	// Edit button
-
 	var editItemButton *widget.Button
 	editItemButton = widget.NewButton("Edit", func() {
 		if !editing {
@@ -579,13 +580,14 @@ func main() {
 	w.ShowAndRun()
 }
 
-func SaveData() {
+func SaveData(itemsData *models.Items) {
 	fmt.Println("Save")
 	var savedData models.Items
 	data, _ := collectionData.Get()
 
 	for _, data := range data {
 		if item, ok := data.(models.Item); ok {
+			fmt.Println("Desc: ", item.Description)
 			savedData.AddItem(models.NewItem(
 				item.Collection,
 				item.Name,
@@ -597,7 +599,7 @@ func SaveData() {
 		}
 	}
 
-	itemsData = savedData
+	itemsData = &savedData
 }
 
 // Function to get the list of file names in the /data/files folder
@@ -644,7 +646,7 @@ func handleFileDrop(uri string) {
 		data.AddFile(newFile)
 		collectionData.SetValue(currentItemID, data)
 		fmt.Println(data.Files)
-		SaveData()
+		SaveData(&itemsData)
 	}
 	itemFileData.Append(newFile)
 	fmt.Println("File saved:", filepath.Base(uri)) // Print the file directory
@@ -679,12 +681,12 @@ func handleImageDrop(uri string) {
 		data.AddImagePath(dstPath)
 		collectionData.SetValue(currentItemID, data)
 		fmt.Println(data.Image)
-		SaveData()
+		SaveData(&itemsData)
 	}
 	itemImagePlaceholder.File = dstPath
 	itemImagePlaceholder.Refresh()
 	fmt.Println("Image saved:", dstPath) // Print the file directory
-	SaveData()
+	SaveData(&itemsData)
 	EncodeMovieData(itemsData)
 }
 
@@ -717,7 +719,7 @@ func dropHandler(pos fyne.Position, uris []fyne.URI) {
 		handleFileDrop(uri.Path())
 	}
 	// Refresh the list after handling drops
-	SaveData()
+	SaveData(&itemsData)
 	EncodeMovieData(itemsData)
 }
 
@@ -728,10 +730,21 @@ func editNameDescription(itemNameDescriptionContainer *fyne.Container) {
 
 	// Create entry fields to replace the labels
 	nameEntry := widget.NewEntry()
+	nameEntry.Wrapping = fyne.TextWrapWord
 	nameEntry.SetText(nameLabel.Text)
 
-	descriptionEntry := widget.NewEntry()
+	descriptionEntry := widget.NewMultiLineEntry()
+	descriptionEntry.Wrapping = fyne.TextWrapWord
+	//descriptionEntry.Scroll = container.ScrollVerticalOnly
 	descriptionEntry.SetText(descriptionLabel.Text)
+
+	nameEntry.OnChanged = func(s string) {
+		updateCollectionDataName(s)
+	}
+
+	descriptionEntry.OnChanged = func(s string) {
+		updateCollectionDataDescription(s)
+	}
 
 	// Create a new container to hold both entry fields
 	newContainer := container.NewBorder(nameEntry, nil, nil, nil, descriptionEntry)
@@ -744,22 +757,36 @@ func editNameDescription(itemNameDescriptionContainer *fyne.Container) {
 	itemNameDescriptionContainer.Refresh()
 }
 
+func updateCollectionDataDescription(s string) {
+	rawData, _ := collectionData.GetValue(currentItemID)
+	if data, ok := rawData.(models.Item); ok {
+		data.Description = s
+		collectionData.SetValue(currentItemID, data)
+		itemsData.UpdateItem(data)
+	}
+}
+
+func updateCollectionDataName(s string) {
+	rawData, _ := collectionData.GetValue(currentItemID)
+	if data, ok := rawData.(models.Item); ok {
+		data.Name = s
+		collectionData.SetValue(currentItemID, data)
+		itemsData.UpdateItem(data)
+	}
+}
+
 func saveNameDescription(itemNameDescriptionContainer *fyne.Container, currentItemID int) {
 	nameEntry := itemNameDescriptionContainer.Objects[1].(*widget.Entry)
 	descriptionEntry := itemNameDescriptionContainer.Objects[0].(*widget.Entry)
 
-	// Update the data in the collection
-	rawData, _ := collectionData.GetValue(currentItemID)
-	if data, ok := rawData.(models.Item); ok {
-		data.Name = nameEntry.Text
-		data.Description = descriptionEntry.Text
-		collectionData.SetValue(currentItemID, data)
-		SaveData()
-	}
+	SaveData(&itemsData)
+	EncodeMovieData(itemsData)
 
 	// Create new label widgets with the updated values
 	nameLabel := widget.NewLabel(nameEntry.Text)
+	nameLabel.Wrapping = fyne.TextWrapWord
 	descriptionLabel := widget.NewLabel(descriptionEntry.Text)
+	descriptionLabel.Wrapping = fyne.TextWrapWord
 	// // Replace the entry fields with the new labels in the container
 	newItemNameDescriptionContainer := container.NewBorder(nameLabel, nil, nil, nil, descriptionLabel)
 	itemNameDescriptionContainer.Objects = newItemNameDescriptionContainer.Objects
@@ -771,12 +798,15 @@ func saveNameDescription(itemNameDescriptionContainer *fyne.Container, currentIt
 
 func SetNameDescription(itemNameDescriptionContainer *fyne.Container, name string, description string, editing bool) {
 	if editing {
-		nameEntry := widget.NewEntry()
+		nameEntry := widget.NewMultiLineEntry()
 		nameEntry.Wrapping = fyne.TextWrapWord
 		nameEntry.SetText(name)
-		descriptionEntry := widget.NewEntry()
+		descriptionEntry := widget.NewMultiLineEntry()
 		descriptionEntry.Wrapping = fyne.TextWrapWord
 		descriptionEntry.SetText(description)
+		descriptionEntry.OnChanged = func(s string) {
+			updateCollectionDataDescription(s)
+		}
 
 		newContainer := container.NewBorder(nameEntry, nil, nil, nil, descriptionEntry)
 		itemNameDescriptionContainer.Objects = newContainer.Objects
