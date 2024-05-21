@@ -1,0 +1,23 @@
+{
+	"items": [
+		{
+			"collection": "Movies",
+			"name": "Transformers",
+			"description": "",
+			"tags": [
+				"Fiction",
+				"2014",
+				"CGI",
+				"Robots"
+			],
+			"labels": [
+				"Action",
+				"PG",
+				"Classic",
+				"Space"
+			],
+			"files": null,
+			"image": "data\\images\\transformers.jpg"
+		}
+	]
+}

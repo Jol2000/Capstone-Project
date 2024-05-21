@@ -1,0 +1,41 @@
+{
+	"items": [
+		{
+			"collection": "Animals",
+			"name": "Lion",
+			"description": "",
+			"tags": [],
+			"labels": [
+				"Carnivore",
+				"Weight: 180Kg",
+				"Fur",
+				"Dangerous"
+			],
+			"files": [],
+			"image": "data\\images\\lionimage.jpg"
+		},
+		{
+			"collection": "Animals",
+			"name": "Komodo dragon",
+			"description": "",
+			"tags": [],
+			"labels": [],
+			"files": [],
+			"image": "data\\images\\komododragonimage.jpg"
+		},
+		{
+			"collection": "Animals",
+			"name": "Horse",
+			"description": "",
+			"tags": [],
+			"labels": [
+				"Native",
+				"Tail",
+				"Herbivore",
+				"Fast"
+			],
+			"files": [],
+			"image": "data\\images\\images.jpg"
+		}
+	]
+}

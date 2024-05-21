@@ -1,0 +1,29 @@
+{
+	"items": [
+		{
+			"collection": "Cars",
+			"name": "X-Trail",
+			"description": "",
+			"tags": [
+				"4WD",
+				"White",
+				"Modern",
+				"Nissan"
+			],
+			"labels": [
+				"Slow",
+				"Green",
+				"Classic",
+				"Price: $48,000",
+				"4WD"
+			],
+			"files": [
+				{
+					"fileName": "PoloGTINotes.txt",
+					"fileLocation": "PoloGTINotes.txt"
+				}
+			],
+			"image": "data\\images\\xtrailimage.jpg"
+		}
+	]
+}
