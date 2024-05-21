@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"slices"
+	"sort"
 	"strings"
 
 	"fyne.io/fyne/v2"
@@ -542,6 +543,9 @@ func main() {
 	w.SetContent(content)
 	w.Resize(fyne.NewSize(1200, 800))
 	w.ShowAndRun()
+
+	printOptions := []string{"name", "description"} // Add other options as needed
+	CreatePrintFile(collectionData, printOptions)
 }
 
 func SaveData(itemsData *models.Items) {
@@ -1024,4 +1028,62 @@ func ImageUploadForm(window fyne.Window) {
 
 	form.Resize(fyne.NewSize(500, 500)) // Adjust the size of the form dialog
 	form.Show()
+}
+
+func CreatePrintFile(currentData binding.UntypedList, printOptions []string) {
+	// Retrieve the data from the binding
+	dataList, err := currentData.Get()
+	if err != nil {
+		fmt.Println("Error getting data:", err)
+		return
+	}
+
+	// Convert the data to a list of Items
+	itemsList := models.Items{}
+	for _, item := range dataList {
+		if typedItem, ok := item.(models.Item); ok {
+			itemsList.AddItem(typedItem)
+		} else {
+			fmt.Println("Data is not of type Item")
+			return
+		}
+	}
+
+	// Group items by their collection
+	collectionMap := make(map[string][]models.Item)
+	for _, item := range itemsList.Items {
+		collectionMap[item.Collection] = append(collectionMap[item.Collection], item)
+	}
+
+	// Create the output file
+	file, err := os.Create("output.txt")
+	if err != nil {
+		fmt.Println("Error creating file:", err)
+		return
+	}
+	defer file.Close()
+
+	// Write grouped data to the file
+	for collection, items := range collectionMap {
+		_, _ = file.WriteString(fmt.Sprintf("Collection: %s\n", collection))
+
+		// Sort items alphabetically by name for consistent output
+		sort.Slice(items, func(i, j int) bool {
+			return items[i].Name < items[j].Name
+		})
+
+		for _, item := range items {
+			for _, option := range printOptions {
+				switch option {
+				case "name":
+					_, _ = file.WriteString(fmt.Sprintf("    Name: %s\n", item.Name))
+				case "description":
+					_, _ = file.WriteString(fmt.Sprintf("    Description: %s\n", item.Description))
+					// Add more cases for other options if needed
+				}
+			}
+			_, _ = file.WriteString("\n")
+		}
+		_, _ = file.WriteString("\n")
+	}
 }
