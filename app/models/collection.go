@@ -137,6 +137,15 @@ func (t *Items) UpdateItem(itemInput Item) {
 	}
 }
 
+func (t *Items) UpdateItemName(itemInput Item, originalName string) {
+	for i, item := range t.Items {
+		if item.Name == originalName {
+			t.Items[i].UpdateItem(itemInput)
+			fmt.Println("Updated Item: ", item.Name)
+		}
+	}
+}
+
 func (t Items) PrintData() {
 	for _, item := range t.Items {
 		fmt.Println("Coll: ", item.Collection)

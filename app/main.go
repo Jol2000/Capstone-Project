@@ -16,6 +16,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -147,6 +148,10 @@ func main() {
 
 	uploadImgBtn := widget.NewButtonWithIcon("", theme.ContentAddIcon(), func() {
 		ImageUploadForm(w)
+	})
+
+	printToTextBtn := widget.NewButtonWithIcon("", theme.MailComposeIcon(), func() {
+		PrintDataForm(w)
 	})
 
 	//Settings
@@ -416,7 +421,7 @@ func main() {
 	tiTitle := canvas.NewText("Treasure It", theme.ForegroundColor())
 	tiTitle.TextSize = 24
 	tiTitle.TextStyle = fyne.TextStyle{Bold: true}
-	burgerMenu := container.NewHBox(editItemButton, createbtn, filterbtn, settingbtn, uploadImgBtn, viewEditBtn, menubtn)
+	burgerMenu := container.NewHBox(editItemButton, createbtn, filterbtn, settingbtn, uploadImgBtn, viewEditBtn, printToTextBtn, menubtn)
 	TopContent := container.New(layout.NewHBoxLayout(), tiTitle, layout.NewSpacer(), burgerMenu)
 	// Formatting
 
@@ -737,9 +742,10 @@ func updateCollectionDataDescription(s string) {
 func updateCollectionDataName(s string) {
 	rawData, _ := collectionData.GetValue(currentItemID)
 	if data, ok := rawData.(models.Item); ok {
+		originalName := data.Name
 		data.Name = s
 		collectionData.SetValue(currentItemID, data)
-		itemsData.UpdateItem(data)
+		itemsData.UpdateItemName(data, originalName)
 	}
 }
 
@@ -1019,6 +1025,39 @@ func FilterDataViewForm(window fyne.Window, nameDescription *fyne.Container, ima
 	form.Show()
 }
 
+func PrintDataForm(window fyne.Window) {
+	printableData := []string{"Name", "Description", "Labels", "Files"}
+
+	var formItems []*widget.FormItem
+	for _, view := range printableData {
+		viewsCheck := widget.NewCheck(view, nil)
+		formItems = append(formItems, widget.NewFormItem("", viewsCheck))
+	}
+
+	form := dialog.NewForm("Edit Views", "Confirm", "Cancel", formItems,
+		func(submitted bool) {
+			if submitted {
+				var printDataFiltered []string
+				for index, item := range formItems {
+					// Cast the widget in each form item to a *widget.Check
+					checkbox, ok := item.Widget.(*widget.Check)
+					if ok {
+						// Check if the checkbox is checked
+						if checkbox.Checked {
+							fmt.Printf("%s is selected\n", checkbox.Text)
+							printDataFiltered = append(printDataFiltered, printableData[index])
+						}
+					}
+				}
+				//viewsFilter = viewsFiltered
+				CreatePrintFile(collectionData, printDataFiltered)
+			}
+		}, window)
+
+	form.Resize(fyne.NewSize(400, 300)) // Adjust the size of the form dialog
+	form.Show()
+}
+
 // ImageUploadForm creates a form to upload an image for an item
 func ImageUploadForm(window fyne.Window) {
 	form := dialog.NewFileOpen(
@@ -1055,8 +1094,12 @@ func CreatePrintFile(currentData binding.UntypedList, printOptions []string) {
 		collectionMap[item.Collection] = append(collectionMap[item.Collection], item)
 	}
 
+	// Get the current date and format it
+	currentDate := time.Now().Format("2006-01-02") // YYYY-MM-DD format
+	fileName := fmt.Sprintf("prints/print_%s.txt", currentDate)
+
 	// Create the output file
-	file, err := os.Create("output.txt")
+	file, err := os.Create(fileName)
 	if err != nil {
 		fmt.Println("Error creating file:", err)
 		return
@@ -1075,11 +1118,21 @@ func CreatePrintFile(currentData binding.UntypedList, printOptions []string) {
 		for _, item := range items {
 			for _, option := range printOptions {
 				switch option {
-				case "name":
-					_, _ = file.WriteString(fmt.Sprintf("    Name: %s\n", item.Name))
-				case "description":
-					_, _ = file.WriteString(fmt.Sprintf("    Description: %s\n", item.Description))
+				case "Name":
+					_, _ = file.WriteString(fmt.Sprintf("\tName: %s\n", item.Name))
+				case "Description":
+					_, _ = file.WriteString(fmt.Sprintf("\tDescription: %s\n", item.Description))
 					// Add more cases for other options if needed
+				case "Labels":
+					_, _ = file.WriteString(fmt.Sprintf("\tLabels:\n"))
+					for _, label := range item.Labels {
+						_, _ = file.WriteString(fmt.Sprintf("\t\t%s\n", label))
+					}
+				case "Files":
+					_, _ = file.WriteString(fmt.Sprintf("\tFiles:\n"))
+					for _, fileData := range item.Files {
+						_, _ = file.WriteString(fmt.Sprintf("\t\t%s\n", fileData.FileName))
+					}
 				}
 			}
 			_, _ = file.WriteString("\n")
