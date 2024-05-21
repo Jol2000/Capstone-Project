@@ -142,20 +142,20 @@ func main() {
 		CreateItemForm(w)
 	})
 
-	filterbtn := widget.NewButtonWithIcon("", theme.ContentRedoIcon(), func() {
+	filterbtn := widget.NewButtonWithIcon("", theme.FolderIcon(), func() {
 		FilterCollectionsForm(w)
 	})
 
-	uploadImgBtn := widget.NewButtonWithIcon("", theme.ContentAddIcon(), func() {
+	uploadImgBtn := widget.NewButtonWithIcon("", theme.FileImageIcon(), func() {
 		ImageUploadForm(w)
 	})
 
-	printToTextBtn := widget.NewButtonWithIcon("", theme.MailComposeIcon(), func() {
+	printToTextBtn := widget.NewButtonWithIcon("", theme.ContentPasteIcon(), func() {
 		PrintDataForm(w)
 	})
 
 	//Settings
-	settingbtn := widget.NewButtonWithIcon("", theme.SettingsIcon(), func() {
+	settingbtn := widget.NewButtonWithIcon("", theme.ColorPaletteIcon(), func() {
 		var themeOption string // Variable to store selected theme option
 
 		// Create a radio group for selecting theme
@@ -427,7 +427,7 @@ func main() {
 	tiTitle := canvas.NewText("Treasure It", theme.ForegroundColor())
 	tiTitle.TextSize = 24
 	tiTitle.TextStyle = fyne.TextStyle{Bold: true}
-	burgerMenu := container.NewHBox(editItemButton, createbtn, filterbtn, settingbtn, uploadImgBtn, viewEditBtn, printToTextBtn, menubtn)
+	burgerMenu := container.NewHBox(editItemButton, createbtn, filterbtn, uploadImgBtn, viewEditBtn, printToTextBtn, settingbtn, menubtn)
 	TopContent := container.New(layout.NewHBoxLayout(), tiTitle, layout.NewSpacer(), burgerMenu)
 	// Formatting
 
@@ -1040,7 +1040,7 @@ func PrintDataForm(window fyne.Window) {
 		formItems = append(formItems, widget.NewFormItem("", viewsCheck))
 	}
 
-	form := dialog.NewForm("Edit Views", "Confirm", "Cancel", formItems,
+	form := dialog.NewForm("Print Options", "Confirm", "Cancel", formItems,
 		func(submitted bool) {
 			if submitted {
 				var printDataFiltered []string

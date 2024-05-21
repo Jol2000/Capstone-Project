@@ -1,3 +1,7 @@
+Collection: Recipes
+
+
+
 Collection: Animals
 
 
@@ -32,9 +36,5 @@ Collection: Cars
 
 
 Collection: Movies
-
-
-Collection: Recipes
-
 
 
