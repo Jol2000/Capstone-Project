@@ -406,6 +406,9 @@ func main() {
 			filterbtn.Hide()
 			settingbtn.Hide()
 			exitbtn.Hide()
+			uploadImgBtn.Hide()
+			viewEditBtn.Hide()
+			printToTextBtn.Hide()
 		} else {
 			//home.Hide()
 			collectionSearchBar.Show()
@@ -414,6 +417,9 @@ func main() {
 			filterbtn.Show()
 			settingbtn.Show()
 			exitbtn.Show()
+			uploadImgBtn.Show()
+			viewEditBtn.Show()
+			printToTextBtn.Show()
 		}
 	})
 
@@ -1062,6 +1068,16 @@ func PrintDataForm(window fyne.Window) {
 func ImageUploadForm(window fyne.Window) {
 	form := dialog.NewFileOpen(
 		func(file fyne.URIReadCloser, err error) {
+			if err != nil {
+				// Handle error, such as upload canceled
+				fmt.Println("Error:", err)
+				return
+			}
+			if file == nil {
+				// Upload canceled
+				fmt.Println("Upload canceled")
+				return
+			}
 			handleImageDrop(file.URI().Path())
 		}, window)
 
