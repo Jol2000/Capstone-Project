@@ -554,9 +554,6 @@ func main() {
 	w.SetContent(content)
 	w.Resize(fyne.NewSize(1200, 800))
 	w.ShowAndRun()
-
-	printOptions := []string{"name", "description"} // Add other options as needed
-	CreatePrintFile(collectionData, printOptions)
 }
 
 func SaveData(itemsData *models.Items) {
@@ -1056,7 +1053,7 @@ func PrintDataForm(window fyne.Window) {
 					}
 				}
 				//viewsFilter = viewsFiltered
-				CreatePrintFile(collectionData, printDataFiltered)
+				CreatePrintFile(collectionData, printDataFiltered, window)
 			}
 		}, window)
 
@@ -1085,7 +1082,7 @@ func ImageUploadForm(window fyne.Window) {
 	form.Show()
 }
 
-func CreatePrintFile(currentData binding.UntypedList, printOptions []string) {
+func CreatePrintFile(currentData binding.UntypedList, printOptions []string, window fyne.Window) {
 	// Retrieve the data from the binding
 	dataList, err := currentData.Get()
 	if err != nil {
@@ -1155,4 +1152,5 @@ func CreatePrintFile(currentData binding.UntypedList, printOptions []string) {
 		}
 		_, _ = file.WriteString("\n")
 	}
+	dialog.ShowInformation("Text File Created", "Path: "+fileName, window)
 }
