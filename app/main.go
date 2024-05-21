@@ -654,7 +654,7 @@ func handleImageDrop(uri string) {
 		data.AddImagePath(dstPath)
 		collectionData.SetValue(currentItemID, data)
 		fmt.Println(data.Image)
-		SaveData(&itemsData)
+		itemsData.UpdateItem(data)
 	}
 	itemImagePlaceholder.File = dstPath
 	itemImagePlaceholder.Refresh()

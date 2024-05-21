@@ -2,10 +2,270 @@
 	"items": [
 		{
 			"collection": "Books",
-			"name": "Book 1",
-			"description": "Test",
+			"name": "Harry Potter and the Philosopher's Stone\r ",
+			"description": "Harry Potter and the Philosopher's Stone is a fantasy novel written by British author J. K. Rowling. The first novel in the Harry Potter series and Rowling's debut novel, it follows Harry Potter, a young wizard who discovers his magical heritage on his eleventh birthday, when he receives a letter of acceptance to Hogwarts School of Witchcraft and Wizardry.",
 			"tags": [],
-			"labels": [],
+			"labels": [
+				"Author: J.K. Rowling",
+				"Published: 1997",
+				"Fiction",
+				"Magic"
+			],
+			"files": [],
+			"image": "data\\images\\Harry_Potter_and_the_Philosopher's_Stone_Book_Cover.jpg"
+		},
+		{
+			"collection": "Books",
+			"name": "The Running Grave\r ",
+			"description": "Sir Colin Edensor, a retired civil servant, approaches Cormoran Strike and Robin Ellacott's detective agency seeking assistance extricating his son Will from the Universal Humanitarian Church (UHC), which has been deemed a cult by critics but claims to be a benevolent charity.",
+			"tags": [],
+			"labels": [
+				"Author: J.K. Rowling",
+				"Published: 2023",
+				"Fiction",
+				"Crime"
+			],
+			"files": [],
+			"image": "data\\images\\The_Running_Grave_book_cover.jpg"
+		},
+		{
+			"collection": "Books",
+			"name": "To Kill a Mockingbird",
+			"description": "A novel by Harper Lee published in 1960. It was immediately successful, winning the Pulitzer Prize, and has become a classic of modern American literature. The novel is renowned for its warmth and humor, despite dealing with serious issues of rape and racial inequality.",
+			"tags": [],
+			"labels": [
+				"Author: Harper Lee",
+				"Published: 1960",
+				"Fiction"
+			],
+			"files": [],
+			"image": "data\\images\\330px-To_Kill_a_Mockingbird_(first_edition_cover).jpg"
+		},
+		{
+			"collection": "Books",
+			"name": "1984",
+			"description": "A dystopian social science fiction novel and cautionary tale written by the English writer George Orwell. It was published in 1949 and is set in a totalitarian society ruled by the Party and its leader, Big Brother. The story focuses on the consequences of mass surveillance, totalitarianism, and repressive regimentation of persons and behaviors within society.",
+			"tags": [],
+			"labels": [
+				"Author: George Orwell",
+				"Published: 1949",
+				"Fiction"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "Pride and Prejudice",
+			"description": "A romantic novel of manners written by Jane Austen in 1813. The novel follows the character development of Elizabeth Bennet, the dynamic protagonist of the book who learns about the repercussions of hasty judgments and eventually comes to appreciate the difference between superficial goodness and actual goodness.",
+			"tags": [],
+			"labels": [
+				"Author: Jane Austen",
+				"Published: 1813"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "The Great Gatsby",
+			"description": "A 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922. The story primarily concerns the young and mysterious millionaire Jay Gatsby and his quixotic passion and obsession with the beautiful former debutante Daisy Buchanan.",
+			"tags": [],
+			"labels": [
+				"Author: F. Scott Fitzgerald",
+				"Published: 1925"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "Moby-Dick",
+			"description": "A novel written by Herman Melville, published in 1851. The narrative is sailor Ishmael's account of the obsessive quest of Ahab, captain of the whaling ship Pequod, for revenge against Moby Dick, the giant white sperm whale that on the ship's previous voyage bit off Ahab's leg at the knee.",
+			"tags": [],
+			"labels": [
+				"Author: Herman Melville",
+				"Published: 1951"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "War and Peace",
+			"description": "A novel by the Russian author Leo Tolstoy, published from 1865 to 1869. It is regarded as one of Tolstoy's finest works and as one of the greatest novels ever written. The work is epic in scale and is a chronicle of the Napoleonic Wars, as well as a philosophical discussion on the nature of history and free will.",
+			"tags": [],
+			"labels": [
+				"Author: Leo Tolstoy",
+				"Published: 1951"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "The Catcher in the Rye",
+			"description": "A novel by J.D. Salinger, partially published in serial form in 1945–1946 and as a novel in 1951. It is about the complex issues of innocence, identity, belonging, loss, connection, sex, and depression. The novel's protagonist, Holden Caulfield, has become an icon for teenage rebellion.\r\n\r\n",
+			"tags": [],
+			"labels": [
+				"Author: J.D. Salinger",
+				"Published: 1955"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "The Lord of the Rings",
+			"description": "An epic high-fantasy novel by English author J.R.R. Tolkien. The story began as a sequel to Tolkien's 1937 fantasy novel The Hobbit but eventually developed into a much larger work. Written in stages between 1937 and 1949, The Lord of the Rings is one of the best-selling books ever written, with over 150 million copies sold.",
+			"tags": [],
+			"labels": [
+				"Author: J.R.R. Tolkien",
+				"Published: 1937"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "The Hobbit",
+			"description": "A children's fantasy novel by English author J.R.R. Tolkien. It was published in 1937 to wide critical acclaim, being nominated for the Carnegie Medal and awarded a prize from the New York Herald Tribune for best juvenile fiction. The book remains popular and is recognized as a classic in children's literature.",
+			"tags": [],
+			"labels": [
+				"Author: J.R.R. Tolkien",
+				"Published: 1937"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "Crime and Punishment",
+			"description": "A novel by the Russian author Fyodor Dostoevsky. It was first published in the literary journal The Russian Messenger in twelve monthly installments during 1866. It was later published in a single volume. It is the second of Dostoevsky's full-length novels following his return from ten years of exile in Siberia.",
+			"tags": [],
+			"labels": [
+				"Author: Fyodor Dostoevsky",
+				"Published: 1866"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "The Picture of Dorian Gray",
+			"description": "A philosophical novel by Oscar Wilde, first published complete in the July 1890 issue of Lippincott's Monthly Magazine. The novel tells of a young man named Dorian Gray, the subject of a painting by artist Basil Hallward. Dorian is selected for his remarkable beauty and becomes enamored with his own image in the portrait.",
+			"tags": [],
+			"labels": [
+				"Author: Oscar Wilde",
+				"Published: 1818"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "Frankenstein",
+			"description": "A novel by English author Mary Shelley that tells the story of Victor Frankenstein, a young scientist who creates a sapient creature in an unorthodox scientific experiment. Shelley started writing the story when she was 18, and the first edition was published anonymously in London on January 1, 1818.",
+			"tags": [],
+			"labels": [
+				"Author: Charlotte Brontë",
+				"Published: 1847"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "Jane Eyre",
+			"description": "An autobiography novel by English writer Charlotte Brontë, published under the pen name \"Currer Bell,\" on 16 October 1847, by Smith, Elder \u0026 Co. of London. The novel is primarily a Bildungsroman (coming-of-age story) concerning the protagonist's moral and spiritual growth during her time at Thornfield Hall.\r\n\r\n",
+			"tags": [],
+			"labels": [
+				"Author: Gabriel García Márquez",
+				"Published: 1967"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "One Hundred Years of Solitude",
+			"description": "A landmark 1967 novel by Colombian author Gabriel García Márquez that tells the multi-generational story of the Buendía family, whose patriarch, José Arcadio Buendía, founded the town of Macondo, the metaphoric Colombia. The magical realist style and thematic richness of the novel established it as a cornerstone of 20th-century literature.",
+			"tags": [],
+			"labels": [
+				"Author: Aldous Huxley",
+				"Published: 1932"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "Brave New World",
+			"description": "A dystopian social science fiction novel by English author Aldous Huxley, published in 1932. Set in a futuristic World State, whose citizens are environmentally engineered into an intelligence-based social hierarchy, the novel anticipates developments in reproductive technology, sleep-learning, psychological manipulation, and classical conditioning.\r\n\r\n",
+			"tags": [],
+			"labels": [
+				"Author: Homer (Traditionally attributed)",
+				"Published: 8th Century BC"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "The Odyssey",
+			"description": "An epic poem attributed to Homer, likely composed between the 8th and 7th centuries BC. It is, in part, a sequel to the Iliad, the other Homeric epic. The poem mainly centers on the Greek hero Odysseus (known as Ulysses in Roman myths), king of Ithaca, and his journey home after the fall of Troy.\r\n\r\n",
+			"tags": [],
+			"labels": [
+				"Author: Homer (Traditionally attributed)"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "Anna Karenina",
+			"description": "A novel by the Russian author Leo Tolstoy, first published in book form in 1878. The complex narrative centers on the extramarital affair between Anna and Count Vronsky and the complex web of interpersonal relationships that ensnare them and other characters in the novel.\r\n\r\n",
+			"tags": [],
+			"labels": [
+				"Author: Leo Tolstoy",
+				"Published: 1877"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "The Brothers Karamazov",
+			"description": "A novel by the Russian author Fyodor Dostoevsky. Dostoevsky spent nearly two years writing The Brothers Karamazov, which was published as a serial in The Russian Messenger from January 1879 to November 1880. The novel is set in 19th-century Russia and examines themes of morality, free will, and the nature of evil.",
+			"tags": [],
+			"labels": [
+				"Author: Fyodor Dostoevsky",
+				"Published: 1880"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "Wuthering Heights",
+			"description": "A novel by Emily Brontë published in 1847 under her pseudonym \"Ellis Bell.\" It tells the story of Heathcliff, a mysterious orphan who falls in love with Catherine Earnshaw, the daughter of his benefactor, and of the revenge he wreaks on her family when he is rejected.",
+			"tags": [],
+			"labels": [
+				"Author: Emily Brontë",
+				"Published: 1847"
+			],
+			"files": [],
+			"image": ""
+		},
+		{
+			"collection": "Books",
+			"name": "Don Quixote",
+			"description": "A Spanish novel by Miguel de Cervantes. Published in two parts, in 1605 and 1615, Don Quixote is considered the most influential work of literature from the Spanish Golden Age and the entire Spanish literary canon. It follows the adventures of a nobleman who reads so many chivalric romances that he loses his sanity and decides to set out to revive chivalry, undo wrongs, and bring justice to the world.",
+			"tags": [],
+			"labels": [
+				"Author: Miguel de Cervantes",
+				"Published: Part 1: 1605, Part 2: 1615"
+			],
 			"files": [],
 			"image": ""
 		}
