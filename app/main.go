@@ -205,30 +205,19 @@ func main() {
 		})
 
 	// Import excel button
+	helpMessage := `Excel file data is imported utilizing Column Header values.
+Use 'Collection', 'Name', 'Description' for relative Item information.
+Any alternative Columns will have their data added to that item's Label data 
+(in the format: [Header: Data]).
+Cells without a Header will be added to that item's Label data 
+(in the format: [Data]).`
 	importButton := widget.NewButtonWithIcon("Import Excel", theme.ContentPasteIcon(), func() {
-		dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
-			if reader == nil {
-				return
-			}
-			if err != nil {
-				dialog.ShowError(err, w)
-				return
-			}
-			defer reader.Close()
-
-			filePath := reader.URI().Path()
-			importedItems, err := readExcel(filePath)
-			if err != nil {
-				dialog.ShowError(err, w)
-				return
-			}
-			itemsData.AddItems(importedItems)
-			collectionList.Refresh()
-			EncodeMovieData(itemsData)
-			dialog.ShowInformation("Import Successful", fmt.Sprintf("%d items imported.", len(importedItems)), w)
-		}, w).Show()
+		infoDialog := dialog.NewInformation("Excel Import Information", helpMessage, w)
+		infoDialog.SetOnClosed(func() {
+			openExcel(w)
+		})
+		infoDialog.Show()
 	})
-
 	// Label List
 	// Item Labels
 	inputLabelData := []string{}
@@ -1179,6 +1168,29 @@ func CreatePrintFile(currentData binding.UntypedList, printOptions []string, win
 		_, _ = file.WriteString("\n")
 	}
 	dialog.ShowInformation("Text File Created", "Path: "+fileName, window)
+}
+
+func openExcel(window fyne.Window) {
+	dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+		if reader == nil {
+			return
+		}
+		if err != nil {
+			dialog.ShowError(err, window)
+			return
+		}
+		defer reader.Close()
+
+		filePath := reader.URI().Path()
+		importedItems, err := readExcel(filePath)
+		if err != nil {
+			dialog.ShowError(err, window)
+			return
+		}
+		items := &models.Items{}
+		items.AddItems(importedItems)
+		dialog.ShowInformation("Import Successful", fmt.Sprintf("%d items imported.", len(importedItems)), window)
+	}, window).Show()
 }
 
 func readExcel(filePath string) ([]models.Item, error) {

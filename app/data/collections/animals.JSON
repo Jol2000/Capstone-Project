@@ -41,6 +41,42 @@
 			],
 			"files": [],
 			"image": "data\\images\\images.jpg"
+		},
+		{
+			"collection": "Animals",
+			"name": "Dog",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 03-30-17",
+				"Fur"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Cat",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 02-20-20",
+				"Fur"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Frog",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 01-10-23",
+				"Jumper"
+			],
+			"files": null,
+			"image": ""
 		}
 	]
 }
