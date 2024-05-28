@@ -1182,18 +1182,20 @@ func openExcel(window fyne.Window) {
 		defer reader.Close()
 
 		filePath := reader.URI().Path()
-		importedItems, err := readExcel(filePath)
+		importedItems, err := readExcel(filePath, window)
 		if err != nil {
 			dialog.ShowError(err, window)
 			return
 		}
 		items := &models.Items{}
 		items.AddItems(importedItems)
-		dialog.ShowInformation("Import Successful", fmt.Sprintf("%d items imported.", len(importedItems)), window)
+		if len(importedItems) != 0 {
+			dialog.ShowInformation("Import Successful", fmt.Sprintf("%d items imported.", len(importedItems)), window)
+		}
 	}, window).Show()
 }
 
-func readExcel(filePath string) ([]models.Item, error) {
+func readExcel(filePath string, w fyne.Window) ([]models.Item, error) {
 	f, err := excelize.OpenFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open Excel file: %w", err)
@@ -1210,6 +1212,25 @@ func readExcel(filePath string) ([]models.Item, error) {
 	}
 
 	headers := rows[0]
+	hasCollectionHeader := false
+	hasNameHeader := false
+	for _, header := range headers {
+		if header == "Collection" {
+			hasCollectionHeader = true
+			break
+		}
+		if header == "Name" {
+			hasNameHeader = true
+			break
+		}
+	}
+
+	if !hasCollectionHeader || !hasNameHeader {
+		fmt.Println("Fail")
+		dialog.ShowInformation("Invalid Import Data", "Header types missing (Collection or Name).", w)
+		return nil, err
+	}
+
 	var items []models.Item
 
 	for _, row := range rows[1:] {
