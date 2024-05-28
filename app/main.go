@@ -27,6 +27,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/xuri/excelize/v2"
 )
 
 // type Items struct {
@@ -202,6 +203,31 @@ func main() {
 			item := diu.(models.Item)
 			o.(*widget.Label).SetText(item.Name)
 		})
+
+	// Import excel button
+	importButton := widget.NewButtonWithIcon("Import Excel", theme.ContentPasteIcon(), func() {
+		dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+			if reader == nil {
+				return
+			}
+			if err != nil {
+				dialog.ShowError(err, w)
+				return
+			}
+			defer reader.Close()
+
+			filePath := reader.URI().Path()
+			importedItems, err := readExcel(filePath)
+			if err != nil {
+				dialog.ShowError(err, w)
+				return
+			}
+			itemsData.AddItems(importedItems)
+			collectionList.Refresh()
+			EncodeMovieData(itemsData)
+			dialog.ShowInformation("Import Successful", fmt.Sprintf("%d items imported.", len(importedItems)), w)
+		}, w).Show()
+	})
 
 	// Label List
 	// Item Labels
@@ -427,7 +453,7 @@ func main() {
 	tiTitle := canvas.NewText("Treasure It", theme.ForegroundColor())
 	tiTitle.TextSize = 24
 	tiTitle.TextStyle = fyne.TextStyle{Bold: true}
-	burgerMenu := container.NewHBox(editItemButton, createbtn, filterbtn, uploadImgBtn, viewEditBtn, printToTextBtn, settingbtn, menubtn)
+	burgerMenu := container.NewHBox(editItemButton, createbtn, filterbtn, uploadImgBtn, viewEditBtn, printToTextBtn, importButton, settingbtn, menubtn)
 	TopContent := container.New(layout.NewHBoxLayout(), tiTitle, layout.NewSpacer(), burgerMenu)
 	// Formatting
 
@@ -1153,4 +1179,53 @@ func CreatePrintFile(currentData binding.UntypedList, printOptions []string, win
 		_, _ = file.WriteString("\n")
 	}
 	dialog.ShowInformation("Text File Created", "Path: "+fileName, window)
+}
+
+func readExcel(filePath string) ([]models.Item, error) {
+	f, err := excelize.OpenFile(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open Excel file: %w", err)
+	}
+	defer f.Close()
+
+	rows, err := f.GetRows("Sheet1")
+	if err != nil {
+		return nil, fmt.Errorf("failed to get rows from Excel file: %w", err)
+	}
+
+	if len(rows) < 1 {
+		return nil, fmt.Errorf("no data found in Excel file")
+	}
+
+	headers := rows[0]
+	var items []models.Item
+
+	for _, row := range rows[1:] {
+		labels := []string{}
+		var collection, name, description string
+		for i, cell := range row {
+			var header string
+			if i < len(headers) {
+				header = headers[i]
+			}
+
+			switch header {
+			case "Collection":
+				collection = cell
+			case "Name":
+				name = cell
+			case "Description":
+				description = cell
+			default:
+				if header == "" {
+					labels = append(labels, cell)
+				} else {
+					labels = append(labels, fmt.Sprintf("%s: %s", header, cell))
+				}
+			}
+		}
+		item := models.NewItem(collection, name, description, labels, nil, nil, "")
+		items = append(items, item)
+	}
+	return items, nil
 }
