@@ -81,6 +81,7 @@ func DecodeMovieData() (models.Items, error) {
 func EncodeMovieData(data models.Items) {
 	fmt.Println("Encoding Data to JSON...")
 	collections := data.CollectionNames()
+	fmt.Println(collections)
 	for _, collection := range collections {
 		file, errs := os.Create("data/collections/" + strings.ToLower(collection) + ".JSON")
 		if errs != nil {
@@ -1187,8 +1188,8 @@ func openExcel(window fyne.Window) {
 			dialog.ShowError(err, window)
 			return
 		}
-		items := &models.Items{}
-		items.AddItems(importedItems)
+		itemsData.AddItems(importedItems)
+		EncodeMovieData(itemsData)
 		if len(importedItems) != 0 {
 			dialog.ShowInformation("Import Successful", fmt.Sprintf("%d items imported.", len(importedItems)), window)
 		}
@@ -1216,17 +1217,16 @@ func readExcel(filePath string, w fyne.Window) ([]models.Item, error) {
 	hasNameHeader := false
 	for _, header := range headers {
 		if header == "Collection" {
+			fmt.Println("Collection data found")
 			hasCollectionHeader = true
-			break
 		}
 		if header == "Name" {
+			fmt.Println("Name data found")
 			hasNameHeader = true
-			break
 		}
 	}
 
 	if !hasCollectionHeader || !hasNameHeader {
-		fmt.Println("Fail")
 		dialog.ShowInformation("Invalid Import Data", "Header types missing (Collection or Name).", w)
 		return nil, err
 	}
