@@ -94,6 +94,15 @@ func (item *Item) AddLabel(label string) {
 	fmt.Println("Updated Labels: ", item.Labels)
 }
 
+func (items *Items) RemoveItem(name string) {
+	// Check if labelID is within the range of Labels slice
+	for index, item := range items.Items {
+		if item.Name == name {
+			items.Items = append(items.Items[:index], items.Items[index+1:]...)
+		}
+	}
+}
+
 func (item *Item) RemoveLabelID(labelID int) {
 	// Check if labelID is within the range of Labels slice
 	if labelID >= 0 && labelID < len(item.Labels) {

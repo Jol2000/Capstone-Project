@@ -288,6 +288,37 @@ Cells without a Header will be added to that item's Label data
 	})
 	fileRemoveButton.Hide()
 
+	itemRemoveButton := widget.NewButtonWithIcon("", theme.ContentRemoveIcon(), func() {
+		if currentItemID != -1 {
+			removeName := ""
+			var collectionUpdate models.Items
+			rawData, _ := collectionData.GetValue(currentItemID)
+			if data, ok := rawData.(models.Item); ok {
+				removeName = data.Name
+				fmt.Println("Length:", collectionData.Length())
+				for i := 0; i < collectionData.Length(); i++ {
+					rawData, _ := collectionData.GetValue(i)
+					if data, ok := rawData.(models.Item); ok {
+						if data.Name != removeName {
+							collectionUpdate.AddItem(data)
+						}
+					}
+				}
+				resetData, _ := collectionData.Get()
+				resetData = resetData[:0]
+				collectionData.Set(resetData)
+				for _, t := range collectionUpdate.Items {
+					collectionData.Append(t)
+				}
+				itemsData.RemoveItem(removeName)
+				EncodeMovieData(itemsData)
+			}
+		} else {
+			fmt.Println("Please select an Item")
+		}
+	})
+	itemRemoveButton.Hide()
+
 	// Create a container for the list
 	listContainer := container.NewBorder(
 		widget.NewLabel("Files:"),
@@ -391,6 +422,7 @@ Cells without a Header will be added to that item's Label data
 			labelEntry.Show()
 			labelAddButton.Show()
 			labelRemoveButton.Show()
+			itemRemoveButton.Show()
 			collectionList.FocusLost()
 			fileRemoveButton.Show()
 			editNameDescription(itemNameDescriptionContainer)
@@ -401,6 +433,7 @@ Cells without a Header will be added to that item's Label data
 			labelAddButton.Hide()
 			labelRemoveButton.Hide()
 			fileRemoveButton.Hide()
+			itemRemoveButton.Hide()
 			collectionList.FocusGained()
 			saveNameDescription(itemNameDescriptionContainer, currentItemID)
 			EncodeMovieData(itemsData)
@@ -447,7 +480,7 @@ Cells without a Header will be added to that item's Label data
 	TopContent := container.New(layout.NewHBoxLayout(), tiTitle, layout.NewSpacer(), burgerMenu)
 	// Formatting
 
-	dataDisplayContainer := container.NewHSplit(container.NewBorder(container.NewBorder(nil, nil, nil, searchBarHelpBtn, collectionSearchBar), nil, nil, nil, collectionList), itemDataContainer)
+	dataDisplayContainer := container.NewHSplit(container.NewBorder(container.NewBorder(nil, nil, nil, searchBarHelpBtn, collectionSearchBar), itemRemoveButton, nil, nil, collectionList), itemDataContainer)
 	dataDisplayContainer.Offset = 0.3
 	//TopContentContainer := container.NewVBox()
 	content := container.NewBorder(TopContent, nil, nil, nil, dataDisplayContainer)
