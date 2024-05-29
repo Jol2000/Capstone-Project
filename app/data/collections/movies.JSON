@@ -18,6 +18,15 @@
 			],
 			"files": null,
 			"image": "data\\images\\transformers.jpg"
+		},
+		{
+			"collection": "Movies",
+			"name": "Robots",
+			"description": "Its about robots",
+			"tags": [],
+			"labels": [],
+			"files": [],
+			"image": ""
 		}
 	]
 }

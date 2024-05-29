@@ -48,6 +48,8 @@ var collectionsFilter []string
 var viewsFilter []string
 var editing = false
 var itemImagePlaceholder = canvas.NewImageFromFile("data/images/defualtImageIcon.jpg")
+var collectionList *widget.List
+var collectionSearchBar *widget.Entry
 
 // Define homePageView function
 var homePageView func()
@@ -97,10 +99,11 @@ func main() {
 		})
 
 		createbtn := widget.NewButtonWithIcon("", theme.ContentAddIcon(), func() {
-			CreateItemForm(w)
+			CreateItemForm(w, collectionSearchBar)
 		})
 
 		filterbtn := widget.NewButtonWithIcon("", theme.FolderIcon(), func() {
+			collectionList.UnselectAll()
 			FilterCollectionsForm(w)
 		})
 
@@ -139,7 +142,7 @@ func main() {
 		})
 
 		//Search bar
-		collectionSearchBar := widget.NewEntry()
+		collectionSearchBar = widget.NewEntry()
 		searchBarHelpBtn := widget.NewButtonWithIcon("", theme.HelpIcon(), func() {
 			dialog.ShowInformation("Search Bar Help", "The search bar filters the currently selected collection(s), use a comma (,) between multiple search criterea options.", w)
 		})
@@ -150,7 +153,7 @@ func main() {
 		}
 
 		// Collection List
-		collectionList := widget.NewListWithData(
+		collectionList = widget.NewListWithData(
 			collectionData,
 			func() fyne.CanvasObject {
 				return widget.NewLabel("")
@@ -404,8 +407,6 @@ Cells without a Header will be added to that item's Label data
 		menubtn := widget.NewButtonWithIcon("", theme.MenuIcon(), func() {
 			// Toggle visibility of home, createbtn, searchbtn
 			if createbtn.Visible() {
-				//home.Hide()
-				collectionSearchBar.Hide()
 				editItemButton.Hide()
 				createbtn.Hide()
 				filterbtn.Hide()
@@ -414,9 +415,8 @@ Cells without a Header will be added to that item's Label data
 				uploadImgBtn.Hide()
 				viewEditBtn.Hide()
 				printToTextBtn.Hide()
+				importButton.Hide()
 			} else {
-				//home.Hide()
-				collectionSearchBar.Show()
 				editItemButton.Show()
 				createbtn.Show()
 				filterbtn.Show()
@@ -425,6 +425,7 @@ Cells without a Header will be added to that item's Label data
 				uploadImgBtn.Show()
 				viewEditBtn.Show()
 				printToTextBtn.Show()
+				importButton.Show()
 			}
 		})
 
@@ -979,7 +980,7 @@ func UpdateData() {
 }
 
 // CreateItemForm creates a form dialog for creating a new item
-func CreateItemForm(window fyne.Window) {
+func CreateItemForm(window fyne.Window, collectionSearchBar *widget.Entry) {
 	collectionEntry := widget.NewEntry()
 	collectionEntry.SetPlaceHolder("Collection")
 
@@ -1002,8 +1003,8 @@ func CreateItemForm(window fyne.Window) {
 			if name != "" && collection != "" && description != "" {
 				newItem := models.NewBasicItem(collection, name, description)
 				itemsData.AddItem(newItem)
-				UpdateData()
 				EncodeMovieData(itemsData)
+				collectionSearchBar.SetText("")
 			} else {
 				dialog.ShowError(errors.New("Name, Date, and Description are required."), window)
 			}
@@ -1456,8 +1457,8 @@ func DecodeMovieData() (models.Items, error) {
 // Writes Items Data to JSON
 func EncodeMovieData(data models.Items) {
 	fmt.Println("Encoding Data to JSON...")
+	clearFolder("data/collections")
 	collections := data.CollectionNames()
-	fmt.Println(collections)
 	for _, collection := range collections {
 		file, errs := os.Create("data/collections/" + strings.ToLower(collection) + ".JSON")
 		if errs != nil {
@@ -1478,4 +1479,21 @@ func EncodeMovieData(data models.Items) {
 		}
 	}
 	fmt.Println("Data Encoded to JSON.")
+}
+
+func clearFolder(folder string) error {
+	files, err := ioutil.ReadDir(folder)
+	if err != nil {
+		return fmt.Errorf("failed to read folder: %w", err)
+	}
+
+	for _, file := range files {
+		filePath := filepath.Join(folder, file.Name())
+		err := os.Remove(filePath)
+		if err != nil {
+			return fmt.Errorf("failed to remove file %s: %w", filePath, err)
+		}
+	}
+
+	return nil
 }
