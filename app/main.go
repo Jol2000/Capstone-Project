@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"hello/models"
 	"image/color"
+	"sort"
 	"time"
 
 	//"image/color"
@@ -28,6 +29,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/xuri/excelize/v2"
 )
 
 // type Items struct {
@@ -1098,4 +1100,169 @@ func ImageUploadForm(window fyne.Window) {
 
 	form.Resize(fyne.NewSize(500, 500)) // Adjust the size of the form dialog
 	form.Show()
+}
+
+func CreatePrintFile(currentData binding.UntypedList, printOptions []string, window fyne.Window) {
+	// Retrieve the data from the binding
+	dataList, err := currentData.Get()
+	if err != nil {
+		fmt.Println("Error getting data:", err)
+		return
+	}
+
+	// Convert the data to a list of Items
+	itemsList := models.Items{}
+	for _, item := range dataList {
+		if typedItem, ok := item.(models.Item); ok {
+			itemsList.AddItem(typedItem)
+		} else {
+			fmt.Println("Data is not of type Item")
+			return
+		}
+	}
+
+	// Group items by their collection
+	collectionMap := make(map[string][]models.Item)
+	for _, item := range itemsList.Items {
+		collectionMap[item.Collection] = append(collectionMap[item.Collection], item)
+	}
+
+	// Get the current date and format it
+	currentDate := time.Now().Format("2006-01-02") // YYYY-MM-DD format
+	fileName := fmt.Sprintf("prints/print_%s.txt", currentDate)
+
+	// Create the output file
+	file, err := os.Create(fileName)
+	if err != nil {
+		fmt.Println("Error creating file:", err)
+		return
+	}
+	defer file.Close()
+
+	// Write grouped data to the file
+	for collection, items := range collectionMap {
+		_, _ = file.WriteString(fmt.Sprintf("Collection: %s\n", collection))
+
+		// Sort items alphabetically by name for consistent output
+		sort.Slice(items, func(i, j int) bool {
+			return items[i].Name < items[j].Name
+		})
+
+		for _, item := range items {
+			for _, option := range printOptions {
+				switch option {
+				case "Name":
+					_, _ = file.WriteString(fmt.Sprintf("\tName: %s\n", item.Name))
+				case "Description":
+					_, _ = file.WriteString(fmt.Sprintf("\tDescription: %s\n", item.Description))
+					// Add more cases for other options if needed
+				case "Labels":
+					_, _ = file.WriteString(fmt.Sprintf("\tLabels:\n"))
+					for _, label := range item.Labels {
+						_, _ = file.WriteString(fmt.Sprintf("\t\t%s\n", label))
+					}
+				case "Files":
+					_, _ = file.WriteString(fmt.Sprintf("\tFiles:\n"))
+					for _, fileData := range item.Files {
+						_, _ = file.WriteString(fmt.Sprintf("\t\t%s\n", fileData.FileName))
+					}
+				}
+			}
+			_, _ = file.WriteString("\n")
+		}
+		_, _ = file.WriteString("\n")
+	}
+	dialog.ShowInformation("Text File Created", "Path: "+fileName, window)
+}
+
+func openExcel(window fyne.Window) {
+	dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+		if reader == nil {
+			return
+		}
+		if err != nil {
+			dialog.ShowError(err, window)
+			return
+		}
+		defer reader.Close()
+
+		filePath := reader.URI().Path()
+		importedItems, err := readExcel(filePath, window)
+		if err != nil {
+			dialog.ShowError(err, window)
+			return
+		}
+		itemsData.AddItems(importedItems)
+		EncodeMovieData(itemsData)
+		if len(importedItems) != 0 {
+			dialog.ShowInformation("Import Successful", fmt.Sprintf("%d items imported.", len(importedItems)), window)
+		}
+	}, window).Show()
+}
+
+func readExcel(filePath string, w fyne.Window) ([]models.Item, error) {
+	f, err := excelize.OpenFile(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open Excel file: %w", err)
+	}
+	defer f.Close()
+
+	rows, err := f.GetRows("Sheet1")
+	if err != nil {
+		return nil, fmt.Errorf("failed to get rows from Excel file: %w", err)
+	}
+
+	if len(rows) < 1 {
+		return nil, fmt.Errorf("no data found in Excel file")
+	}
+
+	headers := rows[0]
+	hasCollectionHeader := false
+	hasNameHeader := false
+	for _, header := range headers {
+		if header == "Collection" {
+			fmt.Println("Collection data found")
+			hasCollectionHeader = true
+		}
+		if header == "Name" {
+			fmt.Println("Name data found")
+			hasNameHeader = true
+		}
+	}
+
+	if !hasCollectionHeader || !hasNameHeader {
+		dialog.ShowInformation("Invalid Import Data", "Header types missing (Collection or Name).", w)
+		return nil, err
+	}
+
+	var items []models.Item
+
+	for _, row := range rows[1:] {
+		labels := []string{}
+		var collection, name, description string
+		for i, cell := range row {
+			var header string
+			if i < len(headers) {
+				header = headers[i]
+			}
+
+			switch header {
+			case "Collection":
+				collection = cell
+			case "Name":
+				name = cell
+			case "Description":
+				description = cell
+			default:
+				if header == "" {
+					labels = append(labels, cell)
+				} else {
+					labels = append(labels, fmt.Sprintf("%s: %s", header, cell))
+				}
+			}
+		}
+		item := models.NewItem(collection, name, description, labels, nil, nil, "")
+		items = append(items, item)
+	}
+	return items, nil
 }
