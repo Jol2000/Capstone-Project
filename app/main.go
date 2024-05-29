@@ -619,7 +619,152 @@ Cells without a Header will be added to that item's Label data
 	collectionList.Select(0)
 	// Setting Content to window
 	w.SetContent(content)
+
+	homePageView := func() {
+		// Function to show the homepage view
+		totalCollections := len(itemsData.CollectionNames())
+		totalItems := len(itemsData.Items)
+
+		overview := canvas.NewText("Welcome to Treasure It!", theme.ForegroundColor())
+		overview.TextSize = 40
+		overview.TextStyle = fyne.TextStyle{Bold: true}
+
+		collectionLabelText := canvas.NewText("Total Collections", theme.ForegroundColor())
+		collectionLabelText.TextSize = 16
+		collectionNumberText := canvas.NewText(fmt.Sprintf("%d", totalCollections), theme.ForegroundColor())
+		collectionNumberText.TextSize = 22
+		collectionNumberText.TextStyle = fyne.TextStyle{Bold: true}
+
+		collectionBorder := canvas.NewRectangle(color.Transparent)
+		collectionBorder.StrokeColor = theme.ForegroundColor()
+		collectionBorder.StrokeWidth = 2
+		collectionBorder.Resize(fyne.NewSize(250, 120))
+
+		collectionContainer := container.NewCenter(
+			container.NewVBox(
+				container.NewPadded(container.NewHBox(collectionLabelText)),
+				container.NewHBox(layout.NewSpacer(), collectionNumberText, layout.NewSpacer()),
+			),
+		)
+
+		collectionContent := container.NewMax(
+			collectionBorder,
+			collectionContainer,
+		)
+
+		itemLabelText := canvas.NewText("Total Items", theme.ForegroundColor())
+		itemLabelText.TextSize = 16
+		itemNumberText := canvas.NewText(fmt.Sprintf("%d", totalItems), theme.ForegroundColor())
+		itemNumberText.TextSize = 22
+		itemNumberText.TextStyle = fyne.TextStyle{Bold: true}
+
+		itemBorder := canvas.NewRectangle(color.Transparent)
+		itemBorder.StrokeColor = theme.ForegroundColor()
+		itemBorder.StrokeWidth = 2
+		itemBorder.Resize(fyne.NewSize(250, 120))
+
+		itemContainer := container.NewCenter(
+			container.NewVBox(
+				container.NewPadded(container.NewHBox(itemLabelText)),
+				container.NewHBox(layout.NewSpacer(), itemNumberText, layout.NewSpacer()),
+			),
+		)
+
+		itemContent := container.NewMax(
+			itemBorder,
+			itemContainer,
+		)
+
+		date := time.Now().Format("Monday, January 2, 2006")
+		dateLabel := canvas.NewText(fmt.Sprintf("Date: %s", date), theme.ForegroundColor())
+		dateLabel.TextSize = 16
+
+		timeLabel := canvas.NewText("", theme.ForegroundColor())
+		timeLabel.TextSize = 16
+
+		go func() {
+			for {
+				currentTime := time.Now()
+				timeStr := currentTime.Format("15:04:05")
+				timeLabel.Text = fmt.Sprintf("Time: %s", timeStr)
+				time.Sleep(1 * time.Second)
+			}
+		}()
+
+		dateTimeContainer := container.NewCenter(
+			container.NewVBox(
+				dateLabel,
+				timeLabel,
+			),
+		)
+
+		viewCollectionsButton := widget.NewButton("View Collections", func() {
+			showCollectionsView(w)
+		})
+		viewCollectionsButton.Importance = widget.HighImportance
+
+		toolbar := widget.NewToolbar(
+			widget.NewToolbarAction(theme.HomeIcon(), func() {
+
+			}),
+		)
+
+		settingbtn := widget.NewButtonWithIcon("", theme.SettingsIcon(), func() {
+			var themeOption string
+
+			radio := widget.NewRadioGroup([]string{"Dark", "Light"}, func(selected string) {
+				themeOption = selected
+			})
+
+			form := dialog.NewForm("Settings", "Ok", "Cancel", []*widget.FormItem{
+				widget.NewFormItem("Theme", radio),
+			}, func(submitted bool) {
+				if submitted && themeOption != "" {
+					if themeOption == "Dark" {
+						a.Settings().SetTheme(theme.DarkTheme())
+					} else {
+						a.Settings().SetTheme(theme.LightTheme())
+					}
+				}
+			}, w)
+
+			form.Show()
+		})
+
+		exitbtn := widget.NewButtonWithIcon("", theme.LogoutIcon(), func() {
+			a.Quit()
+		})
+
+		topLeftButtons := container.NewHBox(toolbar, layout.NewSpacer(), settingbtn, exitbtn)
+		header := container.NewHBox(overview, layout.NewSpacer())
+
+		overviewContainer := container.NewVBox(
+			header,
+			widget.NewSeparator(),
+			container.NewCenter(
+				container.NewHBox(
+					collectionContent,
+					itemContent,
+				),
+			),
+			dateTimeContainer,
+			viewCollectionsButton,
+		)
+		overviewContainer.Add(widget.NewSeparator())
+
+		footerText := canvas.NewText("© 2024 Treasure It | Privacy Policy | Terms of Service | Contact Us", theme.ForegroundColor())
+		footerText.TextSize = 12
+
+		footer := container.NewCenter(footerText)
+		content := container.NewBorder(topLeftButtons, footer, nil, nil, container.NewCenter(overviewContainer))
+
+		w.SetContent(content)
+		w.Resize(fyne.NewSize(800, 600))
+
+	}
+
 	w.Resize(fyne.NewSize(1200, 800))
+	homePageView()
 	w.ShowAndRun()
 }
 
