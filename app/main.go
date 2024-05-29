@@ -540,61 +540,79 @@ Cells without a Header will be added to that item's Label data
 
 		searchInputs := strings.Split(searchInput, ",")
 
-		var addedItems []string
+		//var addedItems []string
+		var validItems []models.Item
 		//addedItems = append(addedItems, "")
 
 		for _, item := range itemsData.Items {
 			if !slices.Contains(collectionsFilter, item.Collection) {
-				fmt.Println("Filtered")
 				continue
 			}
 			for _, searchSplit := range searchInputs {
+				removeInput := false
 				searchSplit = strings.Trim(searchSplit, " ")
 				if searchSplit == "" {
 					continue
 				}
+				if searchSplit[0] == '-' {
+					removeInput = true
+					searchSplit = strings.TrimLeft(searchSplit, "-")
+					searchSplit = strings.Trim(searchSplit, " ")
+				}
+				if searchSplit == "" {
+					continue
+				}
+
 				// Name search
 				if strings.Contains(item.Name, searchSplit) {
 					used := false
-					for _, itemUsed := range addedItems {
-						if strings.Contains(itemUsed, item.Name) {
+					for i, itemUsed := range validItems {
+						if strings.Contains(itemUsed.Name, item.Name) {
+							if removeInput {
+								validItems = append(validItems[:i], validItems[i+1:]...)
+								continue
+							}
 							used = true
 						}
 					}
-					if !used {
-						collectionData.Append(item)
-						addedItems = append(addedItems, item.Name)
+					if !used && !removeInput {
+						validItems = append(validItems, item)
+						//addedItems = append(addedItems, item.Name)
 					}
 				}
 				// Collection search
 				if strings.Contains(item.Collection, searchSplit) {
 					used := false
-					for _, itemUsed := range addedItems {
-						if strings.Contains(itemUsed, item.Name) {
+					for _, itemUsed := range validItems {
+						if strings.Contains(itemUsed.Name, item.Name) {
 							used = true
 						}
 					}
 					if !used {
-						collectionData.Append(item)
-						addedItems = append(addedItems, item.Name)
+						validItems = append(validItems, item)
+						//addedItems = append(addedItems, item.Name)
 					}
 				}
 				// Label search
 				for _, label := range item.Labels {
 					if strings.Contains(label, searchSplit) {
 						used := false
-						for _, itemUsed := range addedItems {
-							if strings.Contains(itemUsed, item.Name) {
+						for _, itemUsed := range validItems {
+							if strings.Contains(itemUsed.Name, item.Name) {
 								used = true
 							}
 						}
 						if !used {
-							collectionData.Append(item)
-							addedItems = append(addedItems, item.Name)
+							validItems = append(validItems, item)
+							//addedItems = append(addedItems, item.Name)
 						}
 					}
 				}
 			}
+		}
+
+		for _, item := range validItems {
+			collectionData.Append(item)
 		}
 	}
 
