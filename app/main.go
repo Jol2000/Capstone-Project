@@ -577,7 +577,7 @@ Cells without a Header will be added to that item's Label data
 		w.SetContent(content)
 	}
 
-	homePageView := func() {
+	homePageView = func() {
 		// Function to show the homepage view
 		totalCollections := len(itemsData.CollectionNames())
 		totalItems := len(itemsData.Items)
