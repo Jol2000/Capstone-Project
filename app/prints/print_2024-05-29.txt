@@ -1,0 +1,110 @@
+Collection: Animals
+	Name: Bear
+	Labels:
+		Birth: 20/05/2012
+		Region: South America
+		Habitat: Jungle
+		Fur
+		Color: Yellow
+		Size: Large
+		Lifespan: 100 years
+		Temperature: Warm
+		Diet: Omnivore
+
+	Name: Elephant
+	Labels:
+		Birth: 25/07/2011
+		Region: Africa
+		Habitat: Desert
+		Fur
+		Color: Black
+		Size: Small
+		Lifespan: 100 years
+		Temperature: Cold
+		Diet: Carnivore
+
+	Name: Fox
+	Labels:
+		Birth: 20/05/2012
+		Region: Africa
+		Habitat: Mountain
+		Fur
+		Color: Brown
+		Size: Small
+		Lifespan: 30 years
+		Temperature: Temperate
+		Diet: Herbivore
+
+	Name: Giraffe
+	Labels:
+		Birth: 20/05/2012
+		Region: Africa
+		Habitat: Desert
+		Fur
+		Color: Black
+		Size: Medium
+		Lifespan: 10 years
+		Temperature: Cold
+		Diet: Omnivore
+
+	Name: Leopard
+	Labels:
+		Birth: 25/07/2011
+		Region: Africa
+		Habitat: Desert
+		Fur
+		Color: Brown
+		Size: Large
+		Lifespan: 20 years
+		Temperature: Warm
+		Diet: Carnivore
+
+	Name: Lion
+	Labels:
+		Birth: 25/07/2011
+		Region: Europe
+		Habitat: Desert
+		Fur
+		Color: Black
+		Size: Small
+		Lifespan: 100 years
+		Temperature: Cold
+		Diet: Omnivore
+
+	Name: Tiger
+	Labels:
+		Birth: 15/03/2008
+		Region: Africa
+		Habitat: Savannah
+		Fur
+		Color: Yellow
+		Size: Medium
+		Lifespan: 30 years
+		Temperature: Cold
+		Diet: Herbivore
+
+	Name: Wolf
+	Labels:
+		Birth: 05/09/2013
+		Region: South America
+		Habitat: Forest
+		Fur
+		Color: Gray
+		Size: Small
+		Lifespan: 50 years
+		Temperature: Cold
+		Diet: Carnivore
+
+	Name: Zebra
+	Labels:
+		Birth: 25/07/2011
+		Region: North America
+		Habitat: Savannah
+		Fur
+		Color: Red
+		Size: Medium
+		Lifespan: 30 years
+		Temperature: Warm
+		Diet: Herbivore
+
+

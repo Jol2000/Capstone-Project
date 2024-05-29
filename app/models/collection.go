@@ -39,7 +39,7 @@ func NewItem(collection string, name string, description string, labels []string
 	return Item{
 		Collection:  collection,
 		Name:        name,
-		Description: "",
+		Description: description,
 		Files:       files,
 		Tags:        tags,
 		Labels:      labels,
@@ -120,6 +120,7 @@ func (t *Items) AddItem(itemInput Item) {
 	for _, item := range t.Items {
 		if item.Name == itemInput.Name {
 			contains = true
+			fmt.Println("Name already exists")
 		}
 	}
 	if !contains {
@@ -141,16 +142,23 @@ func (t *Items) UpdateItem(itemInput Item) {
 	for i, item := range t.Items {
 		if item.Name == itemInput.Name {
 			t.Items[i].UpdateItem(itemInput)
-			fmt.Println("Updated Item: ", item.Name)
 		}
 	}
 }
 
 func (t *Items) UpdateItemName(itemInput Item, originalName string) {
-	for i, item := range t.Items {
-		if item.Name == originalName {
-			t.Items[i].UpdateItem(itemInput)
-			fmt.Println("Updated Item: ", item.Name)
+	contains := false
+	for _, item := range t.Items {
+		if item.Name == itemInput.Name {
+			contains = true
+			fmt.Println("Name already exists")
+		}
+	}
+	if !contains {
+		for i, item := range t.Items {
+			if item.Name == originalName {
+				t.Items[i].UpdateItem(itemInput)
+			}
 		}
 	}
 }

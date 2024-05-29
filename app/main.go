@@ -30,16 +30,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-// type Items struct {
-// 	Results []Item `json:"Movies"`
-// }
-
-// type Item struct {
-// 	Title string `json:"Title"`
-// 	Plot  string `json:"Plot"`
-// 	Genre string `json:"Genre"`
-// }
-
+// Global Variables
 var itemsData models.Items
 var collectionData = binding.NewUntypedList()
 var currentItemID int
@@ -50,24 +41,27 @@ var editing = false
 var itemImagePlaceholder = canvas.NewImageFromFile("data/images/defualtImageIcon.jpg")
 var collectionList *widget.List
 var collectionSearchBar *widget.Entry
-
-// Define homePageView function
 var homePageView func()
 
 func main() {
-	itemImagePlaceholder.FillMode = canvas.ImageFillContain
+	// Decode JSON data
 	dataTest, _ := DecodeMovieData()
-	EncodeMovieData(dataTest)
+	// Store data in itemsData storage Variable
 	itemsData = dataTest
+	// Adds Item data to collection list
+	UpdateCollectionSearch("")
 
+	// Index Selection variables
 	labelSelectedID := -1
 	fileSelectedID := -1
 
+	// Initialise app and window
 	a := app.New()
 	w := a.NewWindow("Treasure It Desktop")
 
-	//---------------------
+	// Collections view page
 	showCollectionsView := func(w fyne.Window) {
+		// Home Button: Navigates to Home view page
 		homebtn := widget.NewButtonWithIcon("", theme.HomeIcon(), func() {
 			if homePageView != nil {
 				homePageView()
@@ -76,6 +70,7 @@ func main() {
 			}
 		})
 
+		// Help Button: Displays help dialog prompt
 		helpbtn := widget.NewButtonWithIcon("", theme.HelpIcon(), func() {
 			helpText := `
 		Welcome to Treasure It Desktop App!
@@ -98,24 +93,28 @@ func main() {
 			dialog.ShowInformation("Help", helpText, w)
 		})
 
+		// Create Button: Calls create item function
 		createbtn := widget.NewButtonWithIcon("", theme.ContentAddIcon(), func() {
 			CreateItemForm(w, collectionSearchBar)
 		})
 
+		// Filter Button: Calls Filter collections function
 		filterbtn := widget.NewButtonWithIcon("", theme.FolderIcon(), func() {
 			collectionList.UnselectAll()
 			FilterCollectionsForm(w)
 		})
 
+		// Upload Image Button: Calls Upload Image function
 		uploadImgBtn := widget.NewButtonWithIcon("", theme.FileImageIcon(), func() {
 			ImageUploadForm(w)
 		})
 
+		// Print to Text Button: Calls Print Data Function
 		printToTextBtn := widget.NewButtonWithIcon("", theme.ContentPasteIcon(), func() {
 			PrintDataForm(w)
 		})
 
-		//Settings
+		//Settings Button: Opens display settings form
 		settingbtn := widget.NewButtonWithIcon("", theme.ColorPaletteIcon(), func() {
 			var themeOption string // Variable to store selected theme option
 
@@ -141,16 +140,13 @@ func main() {
 			form.Show() // Show the form dialog
 		})
 
-		//Search bar
+		// Search Entry: Used to search collection(s)
 		collectionSearchBar = widget.NewEntry()
+
+		// Search Bar Help Button: Displays search bar help dialog
 		searchBarHelpBtn := widget.NewButtonWithIcon("", theme.HelpIcon(), func() {
 			dialog.ShowInformation("Search Bar Help", "The search bar filters the currently selected collection(s), use a comma (,) between multiple search criterea options.", w)
 		})
-
-		// Item list binding
-		for _, t := range itemsData.Items {
-			collectionData.Append(t)
-		}
 
 		// Collection List
 		collectionList = widget.NewListWithData(
@@ -164,13 +160,14 @@ func main() {
 				o.(*widget.Label).SetText(item.Name)
 			})
 
-		// Import excel button
+		// Import Help Text
 		helpMessage := `Excel file data is imported utilizing Column Header values.
 Use 'Collection', 'Name', 'Description' for relative Item information.
 Any alternative Columns will have their data added to that item's Label data 
 (in the format: [Header: Data]).
 Cells without a Header will be added to that item's Label data 
 (in the format: [Data]).`
+		// Import Button: Calls Import Excel Function
 		importButton := widget.NewButtonWithIcon("Import Excel", theme.ContentPasteIcon(), func() {
 			infoDialog := dialog.NewInformation("Excel Import Information", helpMessage, w)
 			infoDialog.SetOnClosed(func() {
@@ -178,16 +175,10 @@ Cells without a Header will be added to that item's Label data
 			})
 			infoDialog.Show()
 		})
-		// Label List
-		// Item Labels
-		inputLabelData := []string{}
 
+		// Label List variable
 		itemLabelData := binding.NewStringList()
-
-		for _, t := range inputLabelData {
-			itemLabelData.Append(t)
-		}
-
+		// Label List widget
 		itemLabelsList := widget.NewListWithData(
 			itemLabelData,
 			func() fyne.CanvasObject {
@@ -198,8 +189,7 @@ Cells without a Header will be added to that item's Label data
 			},
 		)
 
-		//File List
-
+		//File List widget
 		fileList := widget.NewListWithData(
 			itemFileData,
 			func() fyne.CanvasObject {
@@ -212,7 +202,7 @@ Cells without a Header will be added to that item's Label data
 			},
 		)
 
-		// Set onItemSelected callback for list items
+		// Set openFile callback for File list items
 		fileList.OnSelected = func(index int) {
 			if !editing {
 				itemLabelsList.UnselectAll()
@@ -225,6 +215,7 @@ Cells without a Header will be added to that item's Label data
 			}
 		}
 
+		// File Remove Button: Removes selected file from Item data
 		fileRemoveButton := widget.NewButtonWithIcon("", theme.ContentRemoveIcon(), func() {
 			if fileSelectedID != -1 {
 				rawData, _ := collectionData.GetValue(currentItemID)
@@ -247,6 +238,7 @@ Cells without a Header will be added to that item's Label data
 		})
 		fileRemoveButton.Hide()
 
+		// Item Remove Button: Removes selected Item from Item Data
 		itemRemoveButton := widget.NewButtonWithIcon("", theme.ContentRemoveIcon(), func() {
 			if currentItemID != -1 {
 				removeName := ""
@@ -278,40 +270,25 @@ Cells without a Header will be added to that item's Label data
 		})
 		itemRemoveButton.Hide()
 
-		// Create a container for the list
+		// File List Container
 		listContainer := container.NewBorder(
-			widget.NewLabel("Files:"),
+			nil,
 			fileRemoveButton,
 			nil,
 			nil,
 			fileList,
 		)
+		// File Drop handler
 		w.SetOnDropped(dropHandler)
 
-		//------------------------------------------------------------------
-
-		// Icons
-		editIcon := canvas.NewImageFromFile("../images/edit_icon.png")
-		editIcon.FillMode = canvas.ImageFillOriginal
-
-		itemData := widget.NewLabel("Select a movie")
-		itemData.Wrapping = fyne.TextWrapWord
-		// Container build
-		//collectionListContainer := container.NewBorder(collectionToolBarContainer, nil, nil, nil, collectionList)
-		//collectionViewLayout := container.NewGridWithColumns(2, collectionListContainer, itemViewLayout)
-
-		// Content
-		// Item Name and Description
-		itemName := widget.NewLabel("Name")
-		itemDescription := widget.NewLabel("Description")
+		// MAIN CONTENT
+		// Item Name and Description with Container
+		itemName := widget.NewLabel("")
+		itemDescription := widget.NewLabel("")
 		itemDescription.Wrapping = fyne.TextWrapWord
 		itemNameDescriptionContainer := container.NewBorder(itemName, nil, nil, nil, itemDescription)
-		// Item image
-		//itemImage := canvas.NewImageFromFile()
 
-		//
-
-		// Label Add
+		// Label Add Entry and Button
 		labelEntry := widget.NewEntry()
 		labelAddButton := widget.NewButtonWithIcon("", theme.ContentAddIcon(), func() {
 			rawData, _ := collectionData.GetValue(currentItemID)
@@ -321,11 +298,11 @@ Cells without a Header will be added to that item's Label data
 				collectionData.SetValue(currentItemID, data)
 				itemsData.UpdateItem(data)
 				labelEntry.Text = ""
-				//EncodeMovieData(itemsData)
 				labelEntry.Refresh()
 			}
 		})
 
+		// Label Remove Button: Removes selected Label from Item Data
 		labelRemoveButton := widget.NewButtonWithIcon("", theme.ContentRemoveIcon(), func() {
 			if labelSelectedID != -1 {
 				rawData, _ := collectionData.GetValue(currentItemID)
@@ -341,6 +318,7 @@ Cells without a Header will be added to that item's Label data
 				fmt.Println("Please select a label")
 			}
 		})
+		// Enables Label Entry
 		labelEntry.OnChanged = func(input string) {
 			labelAddButton.Disable()
 
@@ -349,18 +327,22 @@ Cells without a Header will be added to that item's Label data
 			}
 		}
 
+		// Updates Label Selected variable
 		itemLabelsList.OnSelected = func(id widget.ListItemID) {
 			fileList.UnselectAll()
 			labelSelectedID = id
 			labelRemoveButton.Enable()
 		}
 
+		// Hide edit buttons
 		labelEntry.Hide()
 		labelAddButton.Hide()
 		labelAddButton.Disable()
 		labelRemoveButton.Hide()
 		labelRemoveButton.Disable()
 
+		// Image Placeholder format
+		itemImagePlaceholder.FillMode = canvas.ImageFillContain
 		// Data View Formating
 		nameDescriptionImageContainer := container.NewHSplit(itemNameDescriptionContainer, itemImagePlaceholder)
 		labelAddRemoveButtonContainer := container.NewHBox(labelAddButton, labelRemoveButton)
@@ -369,11 +351,12 @@ Cells without a Header will be added to that item's Label data
 		itemDataContainerSplit := container.NewVSplit(nameDescriptionImageContainer, labelTagListContainer)
 		itemDataContainer := container.NewBorder(nil, nil, nil, nil, itemDataContainerSplit)
 
+		// Collection View Edit Button: Calls Filter collections form function
 		viewEditBtn := widget.NewButtonWithIcon("", theme.VisibilityIcon(), func() {
 			FilterDataViewForm(w, itemNameDescriptionContainer, itemImagePlaceholder, itemLabelListWithEntry, listContainer, itemDataContainer)
 		})
 
-		// Edit button
+		// Edit button: Toggles Views Between Edit and Save
 		var editItemButton *widget.Button
 		editItemButton = widget.NewButton("Edit", func() {
 			if !editing {
@@ -400,10 +383,12 @@ Cells without a Header will be added to that item's Label data
 			}
 		})
 
+		// Exit Button: Closes Application
 		exitbtn := widget.NewButtonWithIcon("", theme.LogoutIcon(), func() {
 			a.Quit()
 		})
 
+		// Menu Button: Toggles pop out menu visibiliy
 		menubtn := widget.NewButtonWithIcon("", theme.MenuIcon(), func() {
 			// Toggle visibility of home, createbtn, searchbtn
 			if createbtn.Visible() {
@@ -435,13 +420,13 @@ Cells without a Header will be added to that item's Label data
 		tiTitle.TextStyle = fyne.TextStyle{Bold: true}
 		burgerMenu := container.NewHBox(homebtn, helpbtn, editItemButton, createbtn, filterbtn, uploadImgBtn, viewEditBtn, printToTextBtn, importButton, settingbtn, menubtn)
 		TopContent := container.New(layout.NewHBoxLayout(), tiTitle, layout.NewSpacer(), burgerMenu)
-		// Formatting
 
+		// Formatting
 		dataDisplayContainer := container.NewHSplit(container.NewBorder(container.NewBorder(nil, nil, nil, searchBarHelpBtn, collectionSearchBar), itemRemoveButton, nil, nil, collectionList), itemDataContainer)
 		dataDisplayContainer.Offset = 0.3
-		//TopContentContainer := container.NewVBox()
 		content := container.NewBorder(TopContent, nil, nil, nil, dataDisplayContainer)
 
+		// Collection List Select Update
 		collectionList.OnSelected = func(id widget.ListItemID) {
 			fileList.UnselectAll()
 			itemLabelsList.UnselectAll()
@@ -464,6 +449,7 @@ Cells without a Header will be added to that item's Label data
 				for _, file := range data.Files {
 					itemFileData.Append(file)
 				}
+				// Update Name and Description
 				SetNameDescription(itemNameDescriptionContainer, data.Name, data.Description, editing)
 				if data.Image == "" {
 					itemImagePlaceholder.File = "data/images/defualtImageIcon.jpg"
@@ -476,101 +462,14 @@ Cells without a Header will be added to that item's Label data
 			}
 		}
 
+		// Deselect Collection on cursor change
 		collectionSearchBar.OnCursorChanged = func() {
 			collectionList.UnselectAll()
 		}
 
+		// Search Bar on change calls Update collection function with search input
 		collectionSearchBar.OnChanged = func(searchInput string) {
-			if searchInput == "" {
-				dataTest, _ := DecodeMovieData()
-				itemsData = dataTest
-				for _, t := range itemsData.Items {
-					collectionData.Append(t)
-				}
-				FilterCollectionUpdate()
-				return
-			}
-			searchData, _ := collectionData.Get()
-
-			searchData = searchData[:0]
-			collectionData.Set(searchData)
-
-			searchInputs := strings.Split(searchInput, ",")
-
-			//var addedItems []string
-			var validItems []models.Item
-			//addedItems = append(addedItems, "")
-
-			for _, item := range itemsData.Items {
-				if !slices.Contains(collectionsFilter, item.Collection) {
-					continue
-				}
-				for _, searchSplit := range searchInputs {
-					removeInput := false
-					searchSplit = strings.Trim(searchSplit, " ")
-					if searchSplit == "" {
-						continue
-					}
-					if searchSplit[0] == '-' {
-						removeInput = true
-						searchSplit = strings.TrimLeft(searchSplit, "-")
-						searchSplit = strings.Trim(searchSplit, " ")
-					}
-					if searchSplit == "" {
-						continue
-					}
-
-					// Name search
-					if strings.Contains(item.Name, searchSplit) {
-						used := false
-						for i, itemUsed := range validItems {
-							if strings.Contains(itemUsed.Name, item.Name) {
-								if removeInput {
-									validItems = append(validItems[:i], validItems[i+1:]...)
-									continue
-								}
-								used = true
-							}
-						}
-						if !used && !removeInput {
-							validItems = append(validItems, item)
-							//addedItems = append(addedItems, item.Name)
-						}
-					}
-					// Collection search
-					if strings.Contains(item.Collection, searchSplit) {
-						used := false
-						for _, itemUsed := range validItems {
-							if strings.Contains(itemUsed.Name, item.Name) {
-								used = true
-							}
-						}
-						if !used {
-							validItems = append(validItems, item)
-							//addedItems = append(addedItems, item.Name)
-						}
-					}
-					// Label search
-					for _, label := range item.Labels {
-						if strings.Contains(label, searchSplit) {
-							used := false
-							for _, itemUsed := range validItems {
-								if strings.Contains(itemUsed.Name, item.Name) {
-									used = true
-								}
-							}
-							if !used {
-								validItems = append(validItems, item)
-								//addedItems = append(addedItems, item.Name)
-							}
-						}
-					}
-				}
-			}
-
-			for _, item := range validItems {
-				collectionData.Append(item)
-			}
+			UpdateCollectionSearch(searchInput)
 		}
 
 		collectionList.Select(0)
@@ -578,6 +477,7 @@ Cells without a Header will be added to that item's Label data
 		w.SetContent(content)
 	}
 
+	// Home Page View
 	homePageView = func() {
 		// Function to show the homepage view
 		totalCollections := len(itemsData.CollectionNames())
@@ -726,26 +626,15 @@ Cells without a Header will be added to that item's Label data
 	w.ShowAndRun()
 }
 
+// Save data Function:
 func SaveData(itemsData *models.Items) {
-	fmt.Println("Save")
-	var savedData models.Items
 	data, _ := collectionData.Get()
 
 	for _, data := range data {
 		if item, ok := data.(models.Item); ok {
-			fmt.Println("Desc: ", item.Description)
-			savedData.AddItem(models.NewItem(
-				item.Collection,
-				item.Name,
-				item.Description,
-				item.Labels,
-				item.Tags,
-				item.Files,
-				item.Image))
+			itemsData.UpdateItem(item)
 		}
 	}
-
-	itemsData = &savedData
 }
 
 // Function to get the list of file names in the /data/files folder
@@ -791,7 +680,6 @@ func handleFileDrop(uri string) {
 	if data, ok := rawData.(models.Item); ok {
 		data.AddFile(newFile)
 		collectionData.SetValue(currentItemID, data)
-		fmt.Println(data.Files)
 		SaveData(&itemsData)
 	}
 	itemFileData.Append(newFile)
@@ -1004,7 +892,8 @@ func CreateItemForm(window fyne.Window, collectionSearchBar *widget.Entry) {
 				newItem := models.NewBasicItem(collection, name, description)
 				itemsData.AddItem(newItem)
 				EncodeMovieData(itemsData)
-				collectionSearchBar.SetText("")
+				collectionSearchBarinput := collectionSearchBar.Text
+				UpdateCollectionSearch(collectionSearchBarinput)
 			} else {
 				dialog.ShowError(errors.New("Name, Date, and Description are required."), window)
 			}
@@ -1052,6 +941,8 @@ func EditItemForm(window fyne.Window, itemID int) {
 				itemsData.AddItem(newItem)
 				UpdateData()
 				EncodeMovieData(itemsData)
+				collectionSearchBarinput := collectionSearchBar.Text
+				UpdateCollectionSearch(collectionSearchBarinput)
 			} else {
 				dialog.ShowError(errors.New("Name, Date, and Description are required."), window)
 			}
@@ -1344,6 +1235,8 @@ func openExcel(window fyne.Window) {
 		}
 		itemsData.AddItems(importedItems)
 		EncodeMovieData(itemsData)
+		collectionSearchBarinput := collectionSearchBar.Text
+		UpdateCollectionSearch(collectionSearchBarinput)
 		if len(importedItems) != 0 {
 			dialog.ShowInformation("Import Successful", fmt.Sprintf("%d items imported.", len(importedItems)), window)
 		}
@@ -1407,7 +1300,9 @@ func readExcel(filePath string, w fyne.Window) ([]models.Item, error) {
 				if header == "" {
 					labels = append(labels, cell)
 				} else {
-					labels = append(labels, fmt.Sprintf("%s: %s", header, cell))
+					if cell != "" {
+						labels = append(labels, fmt.Sprintf("%s: %s", header, cell))
+					}
 				}
 			}
 		}
@@ -1496,4 +1391,93 @@ func clearFolder(folder string) error {
 	}
 
 	return nil
+}
+
+func UpdateCollectionSearch(searchCriterea string) {
+	if searchCriterea == "" {
+		dataTest, _ := DecodeMovieData()
+		itemsData = dataTest
+		for _, t := range itemsData.Items {
+			collectionData.Append(t)
+		}
+		FilterCollectionUpdate()
+		return
+	}
+	searchData, _ := collectionData.Get()
+
+	searchData = searchData[:0]
+	collectionData.Set(searchData)
+
+	searchInputs := strings.Split(searchCriterea, ",")
+
+	var validItems []models.Item
+
+	for _, item := range itemsData.Items {
+		if !slices.Contains(collectionsFilter, item.Collection) {
+			continue
+		}
+		for _, searchSplit := range searchInputs {
+			removeInput := false
+			labelSearch := false
+			if strings.Contains(searchSplit, ":") {
+				searchSplit = strings.TrimLeft(searchSplit, ":")
+				fmt.Println(searchSplit)
+				labelSearch = true
+			}
+			searchSplit = strings.Trim(searchSplit, " ")
+			if searchSplit == "" {
+				continue
+			}
+			if searchSplit[0] == '-' {
+				removeInput = true
+				searchSplit = strings.TrimLeft(searchSplit, "-")
+				searchSplit = strings.Trim(searchSplit, " ")
+			}
+			if searchSplit == "" {
+				continue
+			}
+
+			// Name search
+			if !labelSearch {
+				if strings.Contains(item.Name, searchSplit) {
+					used := false
+					for i, itemUsed := range validItems {
+						if strings.Contains(itemUsed.Name, item.Name) {
+							if removeInput {
+								validItems = append(validItems[:i], validItems[i+1:]...)
+								continue
+							}
+							used = true
+						}
+					}
+					if !used && !removeInput {
+						validItems = append(validItems, item)
+					}
+				}
+			}
+
+			// Label search
+			for _, label := range item.Labels {
+				if strings.Contains(label, searchSplit) {
+					used := false
+					for i, itemUsed := range validItems {
+						if strings.Contains(itemUsed.Name, item.Name) {
+							if removeInput {
+								validItems = append(validItems[:i], validItems[i+1:]...)
+								continue
+							}
+							used = true
+						}
+					}
+					if !used && !removeInput {
+						validItems = append(validItems, item)
+					}
+				}
+			}
+		}
+	}
+
+	for _, item := range validItems {
+		collectionData.Append(item)
+	}
 }

@@ -1,0 +1,32 @@
+{
+	"items": [
+		{
+			"collection": "Movies",
+			"name": "Transformers",
+			"description": "Test",
+			"tags": [
+				"Fiction",
+				"2014",
+				"CGI",
+				"Robots"
+			],
+			"labels": [
+				"Action",
+				"PG",
+				"Classic",
+				"Space"
+			],
+			"files": null,
+			"image": "data\\images\\transformers.jpg"
+		},
+		{
+			"collection": "Movies",
+			"name": "Robots",
+			"description": "Its about robots",
+			"tags": [],
+			"labels": [],
+			"files": [],
+			"image": ""
+		}
+	]
+}

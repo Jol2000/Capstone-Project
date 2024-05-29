@@ -1,0 +1,184 @@
+{
+	"items": [
+		{
+			"collection": "Plants",
+			"name": "Bamboo",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: ",
+				"Region: ",
+				"Habitat: ",
+				"Thorns",
+				"Color: Gray",
+				"Size: Large",
+				"Lifespan: 50 years",
+				"Temperature: ",
+				"Diet: ",
+				"Growth Rate: Slow"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Plants",
+			"name": "Maple",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: ",
+				"Region: ",
+				"Habitat: ",
+				"Thorns",
+				"Color: Black",
+				"Size: Large",
+				"Lifespan: 100 years",
+				"Temperature: ",
+				"Diet: ",
+				"Growth Rate: Slow"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Plants",
+			"name": "Birch",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: ",
+				"Region: ",
+				"Habitat: ",
+				"Thorns",
+				"Color: Yellow",
+				"Size: Small",
+				"Lifespan: 50 years",
+				"Temperature: ",
+				"Diet: ",
+				"Growth Rate: Slow"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Plants",
+			"name": "Pine",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: ",
+				"Region: ",
+				"Habitat: ",
+				"Thorns",
+				"Color: Red",
+				"Size: Large",
+				"Lifespan: 100 years",
+				"Temperature: ",
+				"Diet: ",
+				"Growth Rate: Fast"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Plants",
+			"name": "Rose",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: ",
+				"Region: ",
+				"Habitat: ",
+				"Thorns",
+				"Color: Gray",
+				"Size: Medium",
+				"Lifespan: 10 years",
+				"Temperature: ",
+				"Diet: ",
+				"Growth Rate: Slow"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Plants",
+			"name": "Oak",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: ",
+				"Region: ",
+				"Habitat: ",
+				"Thorns",
+				"Color: Brown",
+				"Size: Medium",
+				"Lifespan: 20 years",
+				"Temperature: ",
+				"Diet: ",
+				"Growth Rate: Fast"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Plants",
+			"name": "Cactus",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: ",
+				"Region: ",
+				"Habitat: ",
+				"Thorns",
+				"Color: Brown",
+				"Size: Medium",
+				"Lifespan: 30 years",
+				"Temperature: ",
+				"Diet: ",
+				"Growth Rate: Moderate"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Plants",
+			"name": "Tulip",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: ",
+				"Region: ",
+				"Habitat: ",
+				"Thorns",
+				"Color: Red",
+				"Size: Medium",
+				"Lifespan: 30 years",
+				"Temperature: ",
+				"Diet: ",
+				"Growth Rate: Moderate"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Plants",
+			"name": "Daisy",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: ",
+				"Region: ",
+				"Habitat: ",
+				"Thorns",
+				"Color: Yellow",
+				"Size: Small",
+				"Lifespan: 50 years",
+				"Temperature: ",
+				"Diet: ",
+				"Growth Rate: Fast"
+			],
+			"files": null,
+			"image": ""
+		}
+	]
+}

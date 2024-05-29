@@ -1,0 +1,234 @@
+{
+	"items": [
+		{
+			"collection": "Animals",
+			"name": "Lion",
+			"description": "The lion is a large cat of the genus Panthera, native to Africa and India. It has a muscular, broad-chested body; a short, rounded head; round ears; and a hairy tuft at the end of its tail.",
+			"tags": [],
+			"labels": [
+				"Carnivore",
+				"Weight: 180Kg",
+				"Fur",
+				"Dangerous",
+				"Mammal"
+			],
+			"files": [],
+			"image": "data\\images\\lionimage.jpg"
+		},
+		{
+			"collection": "Animals",
+			"name": "Komodo dragon",
+			"description": "The Komodo dragon (Varanus komodoensis), also known as the Komodo monitor, is a member of the monitor lizard family Varanidae that is endemic to the Indonesian islands of Komodo, Rinca, Flores, and Gili Motang. It is the largest extant species of lizard, growing to a maximum length of 3 m (9.8 ft), and weighing up to 70 kg (150 lb).",
+			"tags": [],
+			"labels": [
+				"Carnivore",
+				"Reptile"
+			],
+			"files": [],
+			"image": "data\\images\\komododragonimage.jpg"
+		},
+		{
+			"collection": "Animals",
+			"name": "Horse",
+			"description": "The horse (Equus ferus caballus)[2][3] is a domesticated, one-toed, hoofed mammal. It belongs to the taxonomic family Equidae and is one of two extant subspecies of Equus ferus. The horse has evolved over the past 45 to 55 million years from a small multi-toed creature, close to Eohippus, into the large, single-toed animal of today. Humans began domesticating horses around 4000 BCE, and their domestication is believed to have been widespread by 3000 BCE.",
+			"tags": [],
+			"labels": [
+				"Native",
+				"Tail",
+				"Herbivore",
+				"Fast",
+				"Mammal"
+			],
+			"files": [],
+			"image": "data\\images\\ExcelInput.xlsx"
+		},
+		{
+			"collection": "Animals",
+			"name": "Dog",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 03-30-17",
+				"Fur"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Cat",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 02-20-20",
+				"Fur"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Frog",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 01-10-23",
+				"Jumper"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Giraffe",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 20/05/2012",
+				"Region: Africa",
+				"Habitat: Desert",
+				"Fur",
+				"Color: Black",
+				"Size: Medium",
+				"Lifespan: 10 years",
+				"Temperature: Cold",
+				"Diet: Omnivore"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Tiger",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 15/03/2008",
+				"Region: Africa",
+				"Habitat: Savannah",
+				"Fur",
+				"Color: Yellow",
+				"Size: Medium",
+				"Lifespan: 30 years",
+				"Temperature: Cold",
+				"Diet: Herbivore"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Leopard",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 25/07/2011",
+				"Region: Africa",
+				"Habitat: Desert",
+				"Fur",
+				"Color: Brown",
+				"Size: Large",
+				"Lifespan: 20 years",
+				"Temperature: Warm",
+				"Diet: Carnivore"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Elephant",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 25/07/2011",
+				"Region: Africa",
+				"Habitat: Desert",
+				"Fur",
+				"Color: Black",
+				"Size: Small",
+				"Lifespan: 100 years",
+				"Temperature: Cold",
+				"Diet: Carnivore"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Wolf",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 05/09/2013",
+				"Region: South America",
+				"Habitat: Forest",
+				"Fur",
+				"Color: Gray",
+				"Size: Small",
+				"Lifespan: 50 years",
+				"Temperature: Cold",
+				"Diet: Carnivore"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Zebra",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 25/07/2011",
+				"Region: North America",
+				"Habitat: Savannah",
+				"Fur",
+				"Color: Red",
+				"Size: Medium",
+				"Lifespan: 30 years",
+				"Temperature: Warm",
+				"Diet: Herbivore"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Bear",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 20/05/2012",
+				"Region: South America",
+				"Habitat: Jungle",
+				"Fur",
+				"Color: Yellow",
+				"Size: Large",
+				"Lifespan: 100 years",
+				"Temperature: Warm",
+				"Diet: Omnivore"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Fox",
+			"description": "",
+			"tags": null,
+			"labels": [
+				"Birth: 20/05/2012",
+				"Region: Africa",
+				"Habitat: Mountain",
+				"Fur",
+				"Color: Brown",
+				"Size: Small",
+				"Lifespan: 30 years",
+				"Temperature: Temperate",
+				"Diet: Herbivore"
+			],
+			"files": null,
+			"image": ""
+		}
+	]
+}
