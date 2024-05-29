@@ -49,6 +49,9 @@ var viewsFilter []string
 var editing = false
 var itemImagePlaceholder = canvas.NewImageFromFile("data/images/defualtImageIcon.jpg")
 
+// Define homePageView function
+var homePageView func()
+
 func main() {
 	itemImagePlaceholder.FillMode = canvas.ImageFillContain
 	dataTest, _ := DecodeMovieData()
