@@ -1,0 +1,211 @@
+{
+	"items": [
+		{
+			"collection": "Animals",
+			"name": "Giraffe",
+			"description": "Tall herbivorous mammal",
+			"tags": null,
+			"labels": [
+				"Temperature: Cold",
+				"Size: Medium",
+				"Region: Africa",
+				"Light Requirement: Full Sun",
+				"Lifespan: 10 years",
+				"Color: Black",
+				"Origin: Introduced",
+				"Habitat: Desert",
+				"Shade: Light",
+				"Maintenance Level: Medium",
+				"Birth: 20/05/2012",
+				"Diet: Omnivore",
+				"Climate: Temperate"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Tiger",
+			"description": "Striped carnivorous feline",
+			"tags": null,
+			"labels": [
+				"Temperature: Cold",
+				"Size: Medium",
+				"Region: Africa",
+				"Light Requirement: Full Sun",
+				"Lifespan: 30 years",
+				"Color: Yellow",
+				"Origin: Native",
+				"Habitat: Savannah",
+				"Shade: Dense",
+				"Maintenance Level: Medium",
+				"Birth: 15/03/2008",
+				"Diet: Herbivore",
+				"Climate: Continental"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Leopard",
+			"description": "Spotted carnivorous feline",
+			"tags": null,
+			"labels": [
+				"Temperature: Warm",
+				"Size: Large",
+				"Region: Africa",
+				"Light Requirement: Partial Shade",
+				"Lifespan: 20 years",
+				"Color: Brown",
+				"Origin: Introduced",
+				"Habitat: Desert",
+				"Shade: Light",
+				"Maintenance Level: Medium",
+				"Birth: 25/07/2011",
+				"Diet: Carnivore",
+				"Climate: Continental"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Lion",
+			"description": "Large carnivorous feline",
+			"tags": null,
+			"labels": [
+				"Temperature: Cold",
+				"Size: Small",
+				"Region: Europe",
+				"Light Requirement: Full Shade",
+				"Lifespan: 100 years",
+				"Color: Black",
+				"Origin: Introduced",
+				"Habitat: Desert",
+				"Shade: Moderate",
+				"Maintenance Level: Low",
+				"Birth: 25/07/2011",
+				"Diet: Omnivore",
+				"Climate: Temperate"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Elephant",
+			"description": "Large herbivorous mammal",
+			"tags": null,
+			"labels": [
+				"Temperature: Cold",
+				"Size: Small",
+				"Region: Africa",
+				"Light Requirement: Full Sun",
+				"Lifespan: 100 years",
+				"Color: Black",
+				"Origin: Native",
+				"Habitat: Desert",
+				"Shade: Dense",
+				"Maintenance Level: High",
+				"Birth: 25/07/2011",
+				"Diet: Carnivore",
+				"Climate: Continental"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Wolf",
+			"description": "Carnivorous canine",
+			"tags": null,
+			"labels": [
+				"Temperature: Cold",
+				"Size: Small",
+				"Region: South America",
+				"Light Requirement: Partial Shade",
+				"Lifespan: 50 years",
+				"Color: Gray",
+				"Origin: Native",
+				"Habitat: Forest",
+				"Shade: Dense",
+				"Maintenance Level: Low",
+				"Birth: 05/09/2013",
+				"Diet: Carnivore",
+				"Climate: Polar"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Zebra",
+			"description": "Striped herbivorous mammal",
+			"tags": null,
+			"labels": [
+				"Temperature: Warm",
+				"Size: Medium",
+				"Region: North America",
+				"Light Requirement: Full Shade",
+				"Lifespan: 30 years",
+				"Color: Red",
+				"Origin: Native",
+				"Habitat: Savannah",
+				"Shade: Dense",
+				"Maintenance Level: Low",
+				"Birth: 25/07/2011",
+				"Diet: Herbivore",
+				"Climate: Temperate"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Bear",
+			"description": "Large omnivorous mammal",
+			"tags": null,
+			"labels": [
+				"Temperature: Warm",
+				"Size: Large",
+				"Region: South America",
+				"Light Requirement: Full Sun",
+				"Lifespan: 100 years",
+				"Color: Yellow",
+				"Origin: Introduced",
+				"Habitat: Jungle",
+				"Shade: Light",
+				"Maintenance Level: High",
+				"Birth: 20/05/2012",
+				"Diet: Omnivore",
+				"Climate: Continental"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Animals",
+			"name": "Fox",
+			"description": "Small omnivorous mammal",
+			"tags": null,
+			"labels": [
+				"Temperature: Temperate",
+				"Size: Small",
+				"Region: Africa",
+				"Light Requirement: Full Shade",
+				"Lifespan: 30 years",
+				"Color: Brown",
+				"Origin: Native",
+				"Habitat: Mountain",
+				"Shade: Light",
+				"Maintenance Level: High",
+				"Birth: 20/05/2012",
+				"Diet: Herbivore",
+				"Climate: Temperate"
+			],
+			"files": null,
+			"image": ""
+		}
+	]
+}

@@ -791,6 +791,7 @@ func editNameDescription(itemNameDescriptionContainer *fyne.Container) {
 	itemNameDescriptionContainer.Refresh()
 }
 
+// Update collection data Description
 func updateCollectionDataDescription(s string) {
 	rawData, _ := collectionData.GetValue(currentItemID)
 	if data, ok := rawData.(models.Item); ok {
@@ -800,6 +801,7 @@ func updateCollectionDataDescription(s string) {
 	}
 }
 
+// Update collection data Name
 func updateCollectionDataName(s string) {
 	rawData, _ := collectionData.GetValue(currentItemID)
 	if data, ok := rawData.(models.Item); ok {
@@ -810,6 +812,7 @@ func updateCollectionDataName(s string) {
 	}
 }
 
+// Save current Name and Description
 func saveNameDescription(itemNameDescriptionContainer *fyne.Container, currentItemID int) {
 	nameEntry := itemNameDescriptionContainer.Objects[1].(*widget.Entry)
 	descriptionEntry := itemNameDescriptionContainer.Objects[0].(*widget.Entry)
@@ -831,6 +834,7 @@ func saveNameDescription(itemNameDescriptionContainer *fyne.Container, currentIt
 	itemNameDescriptionContainer.Refresh()
 }
 
+// Set Name and Description
 func SetNameDescription(itemNameDescriptionContainer *fyne.Container, name string, description string, editing bool) {
 	if editing {
 		nameEntry := widget.NewMultiLineEntry()
@@ -858,6 +862,7 @@ func SetNameDescription(itemNameDescriptionContainer *fyne.Container, name strin
 	}
 }
 
+// Updates current collection bind.UntypedList object.
 func UpdateData() {
 	resetData, _ := collectionData.Get()
 	resetData = resetData[:0]
@@ -902,7 +907,6 @@ func CreateItemForm(window fyne.Window, collectionSearchBar *widget.Entry) {
 
 	form.Resize(fyne.NewSize(400, 300)) // Adjust the size of the form dialog
 	form.Show()
-
 }
 
 // EditItemForm creates a form dialog for editing an item
@@ -953,6 +957,7 @@ func EditItemForm(window fyne.Window, itemID int) {
 	form.Show()
 }
 
+// Filters collection for filter settings
 func FilterCollectionUpdate() {
 	resetData, _ := collectionData.Get()
 	resetData = resetData[:0]
@@ -964,6 +969,7 @@ func FilterCollectionUpdate() {
 	}
 }
 
+// Updates View settings for Item based on sellection.
 func FilterViewUpdate(nameDescription *fyne.Container, image *canvas.Image, labelList *fyne.Container, fileList *fyne.Container, dataDisplayContainer *fyne.Container) {
 	topDataSplit := container.NewHSplit(nameDescription, image)
 	topData := container.NewBorder(nil, nil, nil, nil, topDataSplit)
@@ -1089,6 +1095,7 @@ func FilterDataViewForm(window fyne.Window, nameDescription *fyne.Container, ima
 	form.Show()
 }
 
+// Logic for data print.
 func PrintDataForm(window fyne.Window) {
 	printableData := []string{"Name", "Description", "Labels", "Files"}
 
@@ -1216,6 +1223,7 @@ func CreatePrintFile(currentData binding.UntypedList, printOptions []string, win
 	dialog.ShowInformation("Text File Created", "Path: "+fileName, window)
 }
 
+// Opens excel input
 func openExcel(window fyne.Window) {
 	dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
 		if reader == nil {
@@ -1243,6 +1251,7 @@ func openExcel(window fyne.Window) {
 	}, window).Show()
 }
 
+// Reads excel input into collection storage
 func readExcel(filePath string, w fyne.Window) ([]models.Item, error) {
 	f, err := excelize.OpenFile(filePath)
 	if err != nil {
@@ -1376,6 +1385,7 @@ func EncodeMovieData(data models.Items) {
 	fmt.Println("Data Encoded to JSON.")
 }
 
+// clears input folder of files
 func clearFolder(folder string) error {
 	files, err := ioutil.ReadDir(folder)
 	if err != nil {
@@ -1393,6 +1403,7 @@ func clearFolder(folder string) error {
 	return nil
 }
 
+// Search bar logic
 func UpdateCollectionSearch(searchCriterea string) {
 	if searchCriterea == "" {
 		dataTest, _ := DecodeMovieData()

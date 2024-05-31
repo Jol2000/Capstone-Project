@@ -2,8 +2,27 @@
 	"items": [
 		{
 			"collection": "Cars",
+			"name": "Polo GTI",
+			"description": "Volkswagon Polo GTI",
+			"tags": [
+				"Fast",
+				"Red",
+				"Modern",
+				"Volkswagon"
+			],
+			"labels": [
+				"Slow",
+				"Green",
+				"Classic",
+				"Ferrari"
+			],
+			"files": null,
+			"image": ""
+		},
+		{
+			"collection": "Cars",
 			"name": "X-Trail",
-			"description": "The Nissan X-Trail (Nissan Ekusutoreiru) is a compact crossover SUV produced by the Japanese automaker Nissan since 2000. Since its introduction, the X-Trail is positioned below the truck-based Xterra and Pathfinder.",
+			"description": "Nissan X-Trail",
 			"tags": [
 				"4WD",
 				"White",
@@ -14,24 +33,9 @@
 				"Slow",
 				"Green",
 				"Classic",
-				"Price: $48,000",
-				"4WD"
+				"Ferrari"
 			],
-			"files": [],
-			"image": "data\\images\\xtrailimage.jpg"
-		},
-		{
-			"collection": "Cars",
-			"name": "Polo GTI",
-			"description": "The Volkswagen Polo is a supermini car (B-segment) produced by the German car manufacturer Volkswagen since 1975. It is sold in Europe and other markets worldwide in hatchback, saloon, and estate variants throughout its production run.",
-			"tags": [],
-			"labels": [
-				"",
-				"PG",
-				"Classic",
-				"Space"
-			],
-			"files": [],
+			"files": null,
 			"image": ""
 		}
 	]

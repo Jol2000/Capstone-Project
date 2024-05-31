@@ -10,7 +10,6 @@ type Item struct {
 	Collection  string   `json:"collection"`
 	Name        string   `json:"name"`
 	Description string   `json:"description"`
-	Tags        []string `json:"tags"`
 	Labels      []string `json:"labels"`
 	Files       []File   `json:"files"`
 	Image       string   `json:"image"`
@@ -41,7 +40,6 @@ func NewItem(collection string, name string, description string, labels []string
 		Name:        name,
 		Description: description,
 		Files:       files,
-		Tags:        tags,
 		Labels:      labels,
 		Image:       image,
 	}
@@ -53,24 +51,18 @@ func NewBasicItem(collection string, name string, description string) Item {
 		Name:        name,
 		Description: description,
 		Files:       []File{},
-		Tags:        []string{},
 		Labels:      []string{},
 	}
 }
 
-func NewItemwithLabelTag(collection string, name string, description string, labels []string, tags []string) Item {
+func NewItemwithLabelTag(collection string, name string, description string, labels []string) Item {
 	return Item{
 		Collection:  collection,
 		Name:        name,
 		Description: description,
 		Files:       []File{},
-		Tags:        tags,
 		Labels:      labels,
 	}
-}
-
-func (item *Item) AddTag(tag string) {
-	item.Tags = append(item.Tags, tag)
 }
 
 func (item *Item) AddFile(file File) {
@@ -112,7 +104,7 @@ func (item *Item) RemoveLabelID(labelID int) {
 }
 
 func (t Item) String() string {
-	return fmt.Sprintf("%s - $t", t.Collection, t.Name, t.Labels, t.Tags)
+	return fmt.Sprintf("%s - $t", t.Collection, t.Name, t.Labels)
 }
 
 func (t *Items) AddItem(itemInput Item) {
@@ -173,11 +165,6 @@ func (t Items) PrintData() {
 		for _, label := range item.Labels {
 			fmt.Println(label)
 		}
-
-		fmt.Println("Tags: ")
-		for _, tag := range item.Tags {
-			fmt.Println(tag)
-		}
 	}
 }
 
@@ -192,11 +179,6 @@ func (t Items) PrintItemData(itemName string) {
 			for _, label := range item.Labels {
 				fmt.Println(label)
 			}
-
-			fmt.Println("Tags: ")
-			for _, tag := range item.Tags {
-				fmt.Println(tag)
-			}
 		}
 	}
 }
@@ -209,11 +191,6 @@ func (t Item) PrintItemData() {
 	fmt.Println("Labels: ")
 	for _, label := range t.Labels {
 		fmt.Println(label)
-	}
-
-	fmt.Println("Tags: ")
-	for _, tag := range t.Tags {
-		fmt.Println(tag)
 	}
 }
 

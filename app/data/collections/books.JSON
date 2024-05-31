@@ -11,7 +11,12 @@
 				"Fiction",
 				"Magic"
 			],
-			"files": [],
+			"files": [
+				{
+					"fileName": "Harry Potter.pdf",
+					"fileLocation": "Harry Potter.pdf"
+				}
+			],
 			"image": "data\\images\\Harry_Potter_and_the_Philosopher's_Stone_Book_Cover.jpg"
 		},
 		{
@@ -36,7 +41,8 @@
 			"labels": [
 				"Author: Harper Lee",
 				"Published: 1960",
-				"Fiction"
+				"Fiction",
+				"Very nice"
 			],
 			"files": [],
 			"image": "data\\images\\330px-To_Kill_a_Mockingbird_(first_edition_cover).jpg"
